@@ -1,0 +1,160 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "gwdnsLabelPrefix": {
+      "type": "string",
+      "metadata": {
+        "description": "Unique public DNS prefix for the deployment. The fqdn will look something like '<dnsname>.westus.cloudapp.azure.com'. Up to 62 chars, digits or dashes, lowercase, should start with a letter: must conform to '^[a-z][a-z0-9-]{1,61}[a-z0-9]$'. For example johndns1 will result the final RDWEB access url like https://johndns1.westus.cloudapp.azure.com/RDWeb"
+      },
+      "defaultValue": "cloudapps"
+    },
+    "adDomainName": {
+      "type": "string",
+      "metadata": {
+        "description": "The name of the existing AD domain. For example contoso.com"
+      },
+      "defaultValue": "contoso.com"
+    },
+    "adminUserName": {
+      "type": "string",
+      "metadata": {
+        "description": "The existing name of the administrator account in the domain. Exclusion list: 'administrator'. For example johnadmin"
+      },
+      "defaultValue": "cloudadmin"
+    },
+    "adminPassword": {
+      "type": "securestring",
+      "metadata": {
+        "description": "The password for the administrator account in the domain"
+      },
+      "defaultValue": "[concat('Subscription#',subscription().subscriptionId)]"
+    },
+    "imageSKU": {
+      "type": "string",
+      "allowedValues": [
+        "2012-R2-Datacenter",
+        "2016-Datacenter"
+      ],
+      "metadata": {
+        "description": "Windows server SKU"
+      },
+      "defaultValue": "2016-Datacenter"
+    },
+    "numberOfRdshInstances": {
+      "type": "int",
+      "defaultValue": 2,
+      "metadata": {
+        "description": "Number of total Remote Desktop Session Hosts to create."
+      }
+    },
+    "rdshVmSize": {
+      "type": "string",
+      "metadata": {
+        "description": "The size of the RDSH VMs"
+      },
+      "defaultValue": "Standard_A2"
+    },
+    "numberOfWebGwInstances": {
+      "type": "int",
+      "defaultValue": 1,
+      "metadata": {
+        "description": "Number of additional RD Gateway / RD Web Access servers. value of 1 will give a total of 2 for HA."
+      }
+    },
+    "location": {
+      "type": "string",
+      "defaultValue": "[resourceGroup().location]",
+      "metadata": {
+        "description": "Location for all resources."
+      }
+    }
+  },
+  "variables": {
+    "_artifactsLocation": "https://stvioz.blob.core.windows.net/ad-non-ha",
+    "basicRDSDeploymentLocation": "[concat(variables('_artifactsLocation'),'rds-deployment-basic')]",
+    "basicRDSDeploymentTemplate": "azuredeploy.json",
+    "basicRDSDeploymentName": "CreateBasicRDSDeployment",
+    "basicRDSDeploymentURL": "[concat(variables('basicRDSDeploymentLocation'),'/',variables('basicRDSDeploymentTemplate'))]",
+    "rdGatewayWebHAexistingRDSLocation": "[concat(variables('_artifactsLocation'),'rds-deployment-ha-gateway')]",
+    "rdGatewayWebHAexistingRDSTemplate": "azuredeploy.json",
+    "rdGatewayWebHAexistingRDS": "CreateRDGatewayWebAccessHA",
+    "rdGatewayWebHAURL": "[concat(variables('rdGatewayWebHAexistingRDSLocation'),'/',variables('rdGatewayWebHAexistingRDSTemplate'))]",
+    "sslDeploymentexistingRDSLocation": "[concat(variables('_artifactsLocation'),'rds-update-certificate')]",
+    "sslDeploymentexistingRDSTemplate": "azuredeploy.json",
+    "sslDeploymentexistingRDS": "configureSSLonRDSDeployment",
+    "sslDeploymentURL": "[concat(variables('sslDeploymentexistingRDSLocation'),'/',variables('sslDeploymentexistingRDSTemplate'))]",
+    "RdcbHaDeploymentexistingRDSLocation": "[concat(variables('_artifactsLocation'),'rds-deployment-ha-broker')]",
+    "RdcbHaDeploymentexistingRDSTemplate": "azuredeploy.json",
+    "RdcbHaDeploymentexistingRDS": "configureRdcbHaonRDSDeployment",
+    "RdcbHaDeploymentURL": "[concat(variables('RdcbHaDeploymentexistingRDSLocation'),'/',variables('RdcbHaDeploymentexistingRDSTemplate'))]",
+
+    "vnetName": "[concat('vnet-ad-',resourceGroup().name)]",
+    "subnetName": "[concat('snet-ad-',resourceGroup().name)]",    
+    "loadBalancer": "loadBalancer",
+    "gatewaypublicIp": "gwpip",
+    "backEndAddressPool": "LBBAP",
+    "rdgwAvailabilitySet": "gw-availabilityset",
+    "rdcbAvailabilitySet": "cb-availabilityset",
+    "rdBrokerServer": "[concat(variables('brokerVmName'), '.', parameters('adDomainName'))]",
+    "rdGatewayexternalFqdn": "[concat(variables('gatewayVmName'), '.', parameters('adDomainName'))]",
+    "storageAccountName": "[tolower(concat('rdsa', uniqueString(resourceGroup().id)))]",
+    "gatewayVmName": "[concat(variables('vmPrefix'), 'rdgw-01')]",
+    "brokerVmName": "[concat(variables('vmPrefix'), 'rdcb-01')]",
+    "brokerHostName": "[variables('brokerVmName')]",
+    "vmPrefix": ""
+  },
+  "resources": [
+    {
+      "name": "[variables('basicRDSDeploymentName')]",
+      "type": "Microsoft.Resources/deployments",
+      "apiVersion": "2016-02-01",
+      "dependsOn": [
+      ],
+      "properties": {
+        "mode": "Incremental",
+        "templateLink": {
+          "uri": "[variables('basicRDSDeploymentURL')]",
+          "contentVersion": "1.0.0.0"
+        },
+        "parameters": {
+          "_artifactsLocation": {
+            "value": "[variables('basicRDSDeploymentLocation')]"
+          },
+          "gwdnsLabelPrefix": {
+            "value": "[parameters('gwdnsLabelPrefix')]"
+          },
+          "adDomainName": {
+            "value": "[parameters('adDomainName')]"
+          },
+          "vnetName": {
+            "value": "[variables('vnetName')]"
+          },
+          "subnetName": {
+            "value": "[variables('subnetName')]"
+          },
+          "adminUsername": {
+            "value": "[parameters('adminUserName')]"
+          },
+          "adminPassword": {
+            "value": "[parameters('adminPassword')]"
+          },
+          "imageSKU": {
+            "value": "[parameters('imageSKU')]"
+          },
+          "numberOfRdshInstances": {
+            "value": "[parameters('numberOfRdshInstances')]"
+          },
+          "rdshVmSize": {
+            "value": "[parameters('rdshVmSize')]"
+          },
+          "location": {
+            "value": "[parameters('location')]"
+          }
+        }
+      }
+    }
+  ],
+  "outputs": {
+  }
+}
