@@ -71,7 +71,7 @@
     }
   },
   "variables": {
-    "_artifactsLocation": "https://stvioz.blob.core.windows.net/ad-non-ha",
+    "_artifactsLocation": "https://raw.githubusercontent.com/viozcomau/rds-deployment-ha/master/",
     "basicRDSDeploymentLocation": "[concat(variables('_artifactsLocation'),'rds-deployment-basic')]",
     "basicRDSDeploymentTemplate": "azuredeploy.json",
     "basicRDSDeploymentName": "CreateBasicRDSDeployment",
