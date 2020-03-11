@@ -143,6 +143,8 @@
     "subnet-id": "[concat(resourceId('Microsoft.Network/virtualNetworks', parameters('vnetName')),'/subnets/', parameters('subnetName'))]",
 
     "nsgName": "nsg-rds",
+    "availabilitySetPlatformFaultDomainCount": "2",
+    "availabilitySetPlatformUpdateDomainCount": "5",
     "gwAvailabilitySet": "avail-gw",
     "cbAvailabilitySet": "avail-cb",
     "rdshAvailabilitySet": "avail-rdsh",
@@ -240,6 +242,10 @@
       "type": "Microsoft.Compute/availabilitySets",
       "name": "[variables('gwAvailabilitySet')]",
       "location": "[parameters('location')]",
+      "properties": {
+        "platformFaultDomainCount": "[variables('availabilitySetPlatformFaultDomainCount')]",
+        "platformUpdateDomainCount": "[variables('availabilitySetPlatformUpdateDomainCount')]"
+      },
       "sku": {
         "name": "Aligned"
       }
@@ -249,6 +255,10 @@
       "type": "Microsoft.Compute/availabilitySets",
       "name": "[variables('cbAvailabilitySet')]",
       "location": "[parameters('location')]",
+      "properties": {
+        "platformFaultDomainCount": "[variables('availabilitySetPlatformFaultDomainCount')]",
+        "platformUpdateDomainCount": "[variables('availabilitySetPlatformUpdateDomainCount')]"
+      },
       "sku": {
         "name": "Aligned"
       }
@@ -258,6 +268,10 @@
       "type": "Microsoft.Compute/availabilitySets",
       "name": "[variables('rdshAvailabilitySet')]",
       "location": "[parameters('location')]",
+      "properties": {
+        "platformFaultDomainCount": "[variables('availabilitySetPlatformFaultDomainCount')]",
+        "platformUpdateDomainCount": "[variables('availabilitySetPlatformUpdateDomainCount')]"
+      },
       "sku": {
         "name": "Aligned"
       }
