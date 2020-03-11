@@ -147,13 +147,13 @@
             "version": "[parameters('windowsImageVersion')]"
           },
           "osDisk": {
-            "name": "osdisk",
+            "name": "[concat(parameters('vmName'), '1','-osdisk')]",
             "caching": "ReadWrite",
             "createOption": "FromImage"
           },
           "dataDisks": [
             {
-              "name": "[concat(parameters('vmName'), '0','-data-disk1')]",
+              "name": "[concat(parameters('vmName'), '1','-data-disk1')]",
               "createOption": "Empty",
               "caching": "None",
               "diskSizeGB": "[parameters('dataDiskSize')]",

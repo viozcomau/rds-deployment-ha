@@ -101,16 +101,17 @@
     }
   },
   "variables": {
+    "assetLocation": "[concat(parameters('_artifactsLocation'),'/','rds-deployment')]",
     "adVMSize": "Standard_B2ms",
     "staticSubnetID": "[resourceId('Microsoft.Network/virtualNetworks/subnets', parameters('vnetName'), parameters('subnetName'))]",
-    "adTemplateURL": "[concat(parameters('_artifactsLocation'),'/adVmTemplate.json')]",
+    "adTemplateURL": "[concat(variables('assetLocation'),'/adVmTemplate.json')]",
     "adVmDeployment": "CreateAdVms",
     "adVmDeploymentId": "[concat('Microsoft.Resources/deployments/', variables('adVmDeployment'))]",
-    "deployPrimaryAdTemplateURL": "[concat(parameters('_artifactsLocation'),'/deployPrimaryAD.json')]",
+    "deployPrimaryAdTemplateURL": "[concat(variables('assetLocation'),'/deployPrimaryAD.json')]",
     "deployPrimaryAd": "DeployPrimaryAd",
     "deployPrimaryAdID": "[concat('Microsoft.Resources/deployments/', variables('deployPrimaryAd'))]",
     "adPDCVMName": "vm-ad",
-    "vnetwithDNSTemplateURL": "[concat(parameters('_artifactsLocation'),'/vnet-with-dns-server.json')]",
+    "vnetwithDNSTemplateURL": "[concat(variables('assetLocation'),'/vnet-with-dns-server.json')]",
     "updateVNetDNS1": "updateVNetDNS",
     "publicIPAddressName": "[tolower('pip-ad')]",
     "publicLBName": "[concat('lb-ad-',resourceGroup().name)]",
@@ -140,7 +141,7 @@
     "subnetAddressRange": "10.21.0.0/24",
     "dnsServerPrivateIp": "10.21.0.4",
     "subnet-id": "[concat(resourceId('Microsoft.Network/virtualNetworks', parameters('vnetName')),'/subnets/', parameters('subnetName'))]",
-    "assetLocation": "https://raw.githubusercontent.com/Azure/azure-QuickStart-Templates/master/rds-deployment/",
+
     "nsgName": "nsg-rds",
     "gwAvailabilitySet": "avail-gw",
     "cbAvailabilitySet": "avail-cb",
@@ -429,32 +430,32 @@
           "contentVersion": "1.0.0.0"
         },
         "parameters": {
+          "vmName": {
+            "value": "[variables('adPDCVMName')]"
+          },
+          "storageAccount": {
+            "value": "[variables('storageAccountName')]"
+          },
           "adminUsername": {
             "value": "[parameters('adminUsername')]"
           },
           "adminPassword": {
             "value": "[parameters('adminPassword')]"
           },
-          "adRDPNATRuleID": {
-            "value": "[variables('adRDPNATRuleID')]"
-          },
-          "storageAccount": {
-            "value": "[variables('storageAccountName')]"
+          "vmSize": {
+            "value": "[variables('adVMSize')]"
           },
           "subnetResourceId": {
             "value": "[variables('staticSubnetID')]"
           },
-          "primaryAdIpAddress": {
-            "value": "[variables('dnsServerPrivateIp')]"
-          },
-          "vmName": {
-            "value": "[variables('adPDCVMName')]"
-          },
-          "vmSize": {
-            "value": "[variables('adVMSize')]"
+          "adRDPNATRuleID": {
+            "value": "[variables('adRDPNATRuleID')]"
           },
           "adDNicName": {
             "value": "[variables('adNICName')]"
+          },
+          "primaryAdIpAddress": {
+            "value": "[variables('dnsServerPrivateIp')]"
           }
         }
       }
@@ -486,7 +487,7 @@
             "value": "[parameters('adminPassword')]"
           },
           "assetLocation": {
-            "value": "[parameters('_artifactsLocation')]"
+            "value": "[variables('assetLocation')]"
           }
         }
       }
@@ -862,7 +863,7 @@
         "settings": {
           "modulesUrl": "[concat(variables('assetLocation'),'/Configuration.zip')]",
           "configurationFunction": "Configuration.ps1\\RDSDeployment",
-          "Properties": {
+          "properties": {
             "adminCreds": {
               "UserName": "[parameters('adminUsername')]",
               "Password": "PrivateSettingsRef:adminPassword"
