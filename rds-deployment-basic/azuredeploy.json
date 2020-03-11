@@ -247,25 +247,31 @@
       }
     },
     {
-      "apiVersion": "2015-06-15",
+      "apiVersion": "2017-03-30",
       "type": "Microsoft.Compute/availabilitySets",
       "name": "[variables('gwAvailabilitySet')]",
-      "sku": "Aligned",
-      "location": "[parameters('location')]"
+      "location": "[parameters('location')]",
+      "sku": {
+        "name": "Aligned"
+      }
     },
     {
-      "apiVersion": "2015-06-15",
+      "apiVersion": "2017-03-30",
       "type": "Microsoft.Compute/availabilitySets",
       "name": "[variables('cbAvailabilitySet')]",
-      "sku": "Aligned",
-      "location": "[parameters('location')]"
+      "location": "[parameters('location')]",
+      "sku": {
+        "name": "Aligned"
+      }
     },
     {
-      "apiVersion": "2015-06-15",
+      "apiVersion": "2017-03-30",
       "type": "Microsoft.Compute/availabilitySets",
       "name": "[variables('rdshAvailabilitySet')]",
-      "sku": "Aligned",
-      "location": "[parameters('location')]"
+      "location": "[parameters('location')]",
+      "sku": {
+        "name": "Aligned"
+      }
     },
     {
       "apiVersion": "2015-06-15",
@@ -515,11 +521,8 @@
           "virtualNetworkAddressRange": {
             "value": "[variables('vnetAddressRange')]"
           },
-          "subnetName": {
-            "value": "[parameters('subnetName')]"
-          },
-          "subnetRange": {
-            "value": "[variables('subnetAddressRange')]"
+          "subnets": {
+            "value": "[variables('subnets')]"
           },
           "dnsServerAddress": {
             "value": [
