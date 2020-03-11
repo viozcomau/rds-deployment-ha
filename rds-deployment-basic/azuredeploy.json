@@ -152,18 +152,7 @@
     "gwVm": "vm-gw",
     "cbVm": "vm-cb",
     "rdshVm": "vm-rdsh-",
-    "nsgID": "[resourceId('Microsoft.Network/networkSecurityGroups',variables('nsgName'))]",
-    "subnets": [
-      {
-        "name": "[parameters('subnetName')]",
-        "properties": {
-          "addressPrefix": "[variables('subnetAddressRange')]",
-          "networkSecurityGroup": {
-            "id": "[variables('nsgID')]"
-          }
-        }
-      }
-    ]
+    "nsgID": "[resourceId('Microsoft.Network/networkSecurityGroups',variables('nsgName'))]"
   },
   "resources": [
     {
@@ -521,8 +510,11 @@
           "virtualNetworkAddressRange": {
             "value": "[variables('vnetAddressRange')]"
           },
-          "subnets": {
-            "value": "[variables('subnets')]"
+          "subnetName": {
+            "value": "[parameters('subnetName')]"
+          },
+          "subnetRange": {
+            "value": "[variables('subnetAddressRange')]"
           },
           "dnsServerAddress": {
             "value": [
