@@ -712,7 +712,7 @@
         {
           "apiVersion": "2015-06-15",
           "type": "Microsoft.Compute/virtualMachines/extensions",
-          "name": "vm-gw/gateway",
+          "name": "[concat(parameters('gwVmName'),'/gateway')]",
           "location": "[parameters('location')]",
           "dependsOn": [
             "[resourceId('Microsoft.Compute/virtualMachines', parameters('gwVmName'))]"
