@@ -521,11 +521,8 @@
           "virtualNetworkAddressRange": {
             "value": "[variables('vnetAddressRange')]"
           },
-          "subnetName": {
-            "value": "[parameters('subnetName')]"
-          },
-          "subnetRange": {
-            "value": "[variables('subnetAddressRange')]"
+          "subnets": {
+            "value": "[variables('subnets')]"
           },
           "dnsServerAddress": {
             "value": [
