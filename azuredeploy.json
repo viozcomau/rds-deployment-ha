@@ -90,19 +90,24 @@
     "RdcbHaDeploymentURL": "[concat(variables('RdcbHaDeploymentexistingRDSLocation'),'/',variables('RdcbHaDeploymentexistingRDSTemplate'))]",
 
     "vnetName": "[concat('vnet-',resourceGroup().name)]",
-    "subnetName": "[concat('snet-',resourceGroup().name)]",    
+    "subnetName": "[concat('snet-',resourceGroup().name)]",
     "loadBalancer": "loadBalancer",
     "gatewaypublicIp": "gwpip",
     "backEndAddressPool": "LBBAP",
-    "rdgwAvailabilitySet": "gw-availabilityset",
-    "rdcbAvailabilitySet": "cb-availabilityset",
-    "rdBrokerServer": "[concat(variables('brokerVmName'), '.', parameters('adDomainName'))]",
-    "rdGatewayexternalFqdn": "[concat(variables('gatewayVmName'), '.', parameters('adDomainName'))]",
+    "gwAvailabilitySet": "avail-gw",
+    "cbAvailabilitySet": "avail-cb",
+
+
     "storageAccountName": "[tolower(concat('rdsa', uniqueString(resourceGroup().id)))]",
-    "gatewayVmName": "[concat(variables('vmPrefix'), 'rdgw-01')]",
-    "brokerVmName": "[concat(variables('vmPrefix'), 'rdcb-01')]",
-    "brokerHostName": "[variables('brokerVmName')]",
-    "vmPrefix": ""
+
+    "gwVmName": "[concat(variables('vmPrefix'), 'gw-1')]",
+    "gwExternalFqdn": "[concat(variables('gwVmName'), '.', parameters('adDomainName'))]",
+
+    "cbVmName": "[concat(variables('vmPrefix'), 'cb-1')]",
+    "cbServerName": "[concat(variables('cbVmName'), '.', parameters('adDomainName'))]",
+
+    "brokerHostName": "[variables('cbVmName')]",
+    "vmPrefix": "vm-"
   },
   "resources": [
     {
@@ -150,6 +155,18 @@
           },
           "location": {
             "value": "[parameters('location')]"
+          },
+          "gwAvailabilitySet": {
+            "value": "[variables('gwAvailabilitySet')]"
+          },
+          "cbAvailabilitySet": {
+            "value": "[variables('cbAvailabilitySet')]"
+          },
+          "gwVmName": {
+            "value": "[variables('gwVmName')]"
+          },
+          "cbVmName": {
+            "value": "[variables('cbVmName')]"
           }
         }
       }

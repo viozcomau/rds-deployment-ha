@@ -98,12 +98,36 @@
       "metadata": {
         "description": "Location for all resources."
       }
+    },
+    "gwAvailabilitySet": {
+      "type": "string",
+      "metadata": {
+        "description": "Number of RemoteDesktopSessionHosts"
+      }
+    },
+    "cbAvailabilitySet": {
+      "type": "string",
+      "metadata": {
+        "description": "Number of RemoteDesktopSessionHosts"
+      }
+    },
+    "gwVmName": {
+      "type": "string",
+      "metadata": {
+        "description": "Number of RemoteDesktopSessionHosts"
+      }
+    },
+    "cbVmName": {
+      "type": "string",
+      "metadata": {
+        "description": "Number of RemoteDesktopSessionHosts"
+      }
     }
   },
   "variables": {
     "assetLocation": "[concat(parameters('_artifactsLocation'),'/','rds-deployment')]",
     "adVMSize": "Standard_B2ms",
-    "staticSubnetID": "[resourceId('Microsoft.Network/virtualNetworks/subnets', parameters('vnetName'), parameters('subnetName'))]",
+
     "adTemplateURL": "[concat(variables('assetLocation'),'/adVmTemplate.json')]",
     "adVmDeployment": "CreateAdVms",
     "adVmDeploymentId": "[concat('Microsoft.Resources/deployments/', variables('adVmDeployment'))]",
@@ -140,21 +164,17 @@
     "vnetAddressRange": "10.21.0.0/16",
     "subnetAddressRange": "10.21.0.0/24",
     "dnsServerPrivateIp": "10.21.0.4",
-    "subnet-id": "[concat(resourceId('Microsoft.Network/virtualNetworks', parameters('vnetName')),'/subnets/', parameters('subnetName'))]",
+    "subnetId": "[concat(resourceId('Microsoft.Network/virtualNetworks', parameters('vnetName')),'/subnets/', parameters('subnetName'))]",
 
     "nsgName": "nsg-rds",
     "availabilitySetPlatformFaultDomainCount": "2",
     "availabilitySetPlatformUpdateDomainCount": "5",
-    "gwAvailabilitySet": "avail-gw",
-    "cbAvailabilitySet": "avail-cb",
     "rdshAvailabilitySet": "avail-rdsh",
-    "gwNic": "nic-gw",
-    "cbNic": "nic-cb",
+    "gwNic": "nic-gw-1",
+    "cbNic": "nic-cb-1",
     "rdshNic": "nic-rdsh-",
-    "gwVm": "vm-gw",
-    "cbVm": "vm-cb",
     "rdshVm": "vm-rdsh-",
-    "nsgID": "[resourceId('Microsoft.Network/networkSecurityGroups',variables('nsgName'))]",
+    "nsgID": "[resourceId('Microsoft.Network/networkSecurityGroups',variables('nsgName'))]"
   },
   "resources": [
     {
@@ -240,7 +260,7 @@
     {
       "apiVersion": "2017-03-30",
       "type": "Microsoft.Compute/availabilitySets",
-      "name": "[variables('gwAvailabilitySet')]",
+      "name": "[parameters('gwAvailabilitySet')]",
       "location": "[parameters('location')]",
       "properties": {
         "platformFaultDomainCount": "[variables('availabilitySetPlatformFaultDomainCount')]",
@@ -253,7 +273,7 @@
     {
       "apiVersion": "2017-03-30",
       "type": "Microsoft.Compute/availabilitySets",
-      "name": "[variables('cbAvailabilitySet')]",
+      "name": "[parameters('cbAvailabilitySet')]",
       "location": "[parameters('location')]",
       "properties": {
         "platformFaultDomainCount": "[variables('availabilitySetPlatformFaultDomainCount')]",
@@ -458,7 +478,7 @@
             "value": "[variables('adVMSize')]"
           },
           "subnetResourceId": {
-            "value": "[variables('subnet-id')]"
+            "value": "[variables('subnetId')]"
           },
           "adRDPNATRuleID": {
             "value": "[variables('adRDPNATRuleID')]"
@@ -554,7 +574,7 @@
             "properties": {
               "privateIPAllocationMethod": "Dynamic",
               "subnet": {
-                "id": "[variables('subnet-id')]"
+                "id": "[variables('subnetId')]"
               },
               "loadBalancerBackendAddressPools": [
                 {
@@ -592,7 +612,7 @@
             "properties": {
               "privateIPAllocationMethod": "Dynamic",
               "subnet": {
-                "id": "[variables('subnet-id')]"
+                "id": "[variables('subnetId')]"
               }
             }
           }
@@ -607,7 +627,7 @@
     {
       "apiVersion": "2015-06-15",
       "type": "Microsoft.Network/networkInterfaces",
-      "name": "[concat(variables('rdshNic'), copyindex())]",
+      "name": "[concat(variables('rdshNic'), copyindex(1))]",
       "location": "[parameters('location')]",
       "copy": {
         "name": "nic-loop-rdsh",
@@ -624,7 +644,7 @@
             "properties": {
               "privateIPAllocationMethod": "Dynamic",
               "subnet": {
-                "id": "[variables('subnet-id')]"
+                "id": "[variables('subnetId')]"
               }
             }
           }
@@ -639,7 +659,7 @@
     {
       "apiVersion": "2018-10-01",
       "type": "Microsoft.Compute/virtualMachines",
-      "name": "[variables('gwVm')]",
+      "name": "[parameters('gwVmName')]",
       "location": "[parameters('location')]",
       "dependsOn": [
         "[variables('deployPrimaryAdID')]",
@@ -651,7 +671,7 @@
           "vmSize": "Standard_B2ms"
         },
         "availabilitySet": {
-          "id": "[resourceId('Microsoft.Compute/availabilitySets', variables('gwAvailabilitySet'))]"
+          "id": "[resourceId('Microsoft.Compute/availabilitySets', parameters('gwAvailabilitySet'))]"
         },
         "osProfile": {
           "computerName": "gateway",
@@ -695,7 +715,7 @@
           "name": "vm-gw/gateway",
           "location": "[parameters('location')]",
           "dependsOn": [
-            "[resourceId('Microsoft.Compute/virtualMachines', 'vm-gw')]"
+            "[resourceId('Microsoft.Compute/virtualMachines', parameters('gwVmName'))]"
           ],
           "properties": {
             "publisher": "Microsoft.Powershell",
@@ -725,7 +745,7 @@
     {
       "apiVersion": "2018-10-01",
       "type": "Microsoft.Compute/virtualMachines",
-      "name": "[concat(variables('rdshVm'), copyindex())]",
+      "name": "[concat(variables('rdshVm'), copyindex(1))]",
       "location": "[parameters('location')]",
       "copy": {
         "name": "rdsh-vm-loop",
@@ -734,7 +754,7 @@
       "dependsOn": [
         "[variables('deployPrimaryAdID')]",
         "[concat('Microsoft.Storage/storageAccounts/', variables('storageAccountName'))]",
-        "[concat('Microsoft.Network/networkInterfaces/', variables('rdshNic'), copyindex())]"
+        "[concat('Microsoft.Network/networkInterfaces/', variables('rdshNic'), copyindex(1))]"
       ],
       "properties": {
         "hardwareProfile": {
@@ -744,7 +764,7 @@
           "id": "[resourceId('Microsoft.Compute/availabilitySets', variables('rdshAvailabilitySet'))]"
         },
         "osProfile": {
-          "computerName": "[concat('rdsh-', copyIndex())]",
+          "computerName": "[concat('rdsh-', copyindex(1))]",
           "adminUsername": "[parameters('adminUsername')]",
           "adminPassword": "[parameters('adminPassword')]"
         },
@@ -756,7 +776,7 @@
             "version": "latest"
           },
           "osDisk": {
-            "name": "[concat('rdsh-',copyIndex())]",
+            "name": "[concat('rdsh-',copyindex(1))]",
             "createOption": "FromImage",
             "managedDisk": {
               "storageAccountType": "Standard_LRS"
@@ -767,7 +787,7 @@
         "networkProfile": {
           "networkInterfaces": [
             {
-              "id": "[resourceId('Microsoft.Network/networkInterfaces',concat(variables('rdshNic'), copyindex()))]"
+              "id": "[resourceId('Microsoft.Network/networkInterfaces',concat(variables('rdshNic'), copyindex(1)))]"
             }
           ]
         },
@@ -782,10 +802,10 @@
         {
           "apiVersion": "2015-06-15",
           "type": "Microsoft.Compute/virtualMachines/extensions",
-          "name": "[concat(variables('rdshVm'), copyindex(),'/sessionhost')]",
+          "name": "[concat(variables('rdshVm'), copyindex(1),'/sessionhost')]",
           "location": "[parameters('location')]",
           "dependsOn": [
-            "[resourceId('Microsoft.Compute/virtualMachines', concat(variables('rdshVm'), copyindex()))]"
+            "[resourceId('Microsoft.Compute/virtualMachines', concat(variables('rdshVm'), copyindex(1)))]"
           ],
           "properties": {
             "publisher": "Microsoft.Powershell",
@@ -815,7 +835,7 @@
     {
       "apiVersion": "2018-10-01",
       "type": "Microsoft.Compute/virtualMachines",
-      "name": "[variables('cbVm')]",
+      "name": "[parameters('cbVmName')]",
       "location": "[parameters('location')]",
       "dependsOn": [
         "[variables('deployPrimaryAdID')]",
@@ -828,7 +848,7 @@
           "vmSize": "Standard_B2ms"
         },
         "availabilitySet": {
-          "id": "[resourceId('Microsoft.Compute/availabilitySets', variables('cbAvailabilitySet'))]"
+          "id": "[resourceId('Microsoft.Compute/availabilitySets', parameters('cbAvailabilitySet'))]"
         },
         "osProfile": {
           "computerName": "broker",
@@ -868,12 +888,12 @@
     },
     {
       "type": "Microsoft.Compute/virtualMachines/extensions",
-      "name": "[concat(variables('cbVm'), '/rdsdeployment')]",
+      "name": "[concat(parameters('cbVmName'), '/rdsdeployment')]",
       "apiVersion": "2015-06-15",
       "location": "[parameters('location')]",
       "dependsOn": [
-        "[resourceId('Microsoft.Compute/virtualMachines', variables('cbVm'))]",
-        "[concat('Microsoft.Compute/virtualMachines/',variables('gwVm'),'/extensions/gateway')]",
+        "[resourceId('Microsoft.Compute/virtualMachines', parameters('cbVmName'))]",
+        "[concat('Microsoft.Compute/virtualMachines/',parameters('gwVmName'),'/extensions/gateway')]",
         "rdsh-vm-loop"
       ],
       "properties": {
