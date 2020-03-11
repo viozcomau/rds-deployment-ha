@@ -89,8 +89,8 @@
     "RdcbHaDeploymentexistingRDS": "configureRdcbHaonRDSDeployment",
     "RdcbHaDeploymentURL": "[concat(variables('RdcbHaDeploymentexistingRDSLocation'),'/',variables('RdcbHaDeploymentexistingRDSTemplate'))]",
 
-    "vnetName": "[concat('vnet-',resourceGroup().name)]",
-    "subnetName": "[concat('snet-',resourceGroup().name)]",    
+    "vnetName": "[concat('vnet-ad-',resourceGroup().name)]",
+    "subnetName": "[concat('snet-ad-',resourceGroup().name)]",    
     "loadBalancer": "loadBalancer",
     "gatewaypublicIp": "gwpip",
     "backEndAddressPool": "LBBAP",
