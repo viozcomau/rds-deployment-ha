@@ -446,7 +446,7 @@
             "value": "[variables('adVMSize')]"
           },
           "subnetResourceId": {
-            "value": "[variables('staticSubnetID')]"
+            "value": "[variables('subnet-id')]"
           },
           "adRDPNATRuleID": {
             "value": "[variables('adRDPNATRuleID')]"

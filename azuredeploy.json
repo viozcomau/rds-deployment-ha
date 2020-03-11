@@ -53,7 +53,7 @@
       "metadata": {
         "description": "The size of the RDSH VMs"
       },
-      "defaultValue": "Standard_A2"
+      "defaultValue": "Standard_A2_v2"
     },
     "numberOfWebGwInstances": {
       "type": "int",
