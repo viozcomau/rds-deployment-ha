@@ -667,8 +667,11 @@
           },
           "osDisk": {
             "name": "osdisk",
-            "caching": "ReadWrite",
-            "createOption": "FromImage"
+            "createOption": "FromImage",
+            "managedDisk": {
+              "storageAccountType": "Standard_LRS"
+            },
+            "caching": "ReadWrite"
           }
         },
         "networkProfile": {
@@ -753,9 +756,12 @@
             "version": "latest"
           },
           "osDisk": {
-            "name": "osdisk",
-            "caching": "ReadWrite",
-            "createOption": "FromImage"
+            "name": "[concat('rdsh-',copyIndex())]",
+            "createOption": "FromImage",
+            "managedDisk": {
+              "storageAccountType": "Standard_LRS"
+            },
+            "caching": "ReadWrite"
           }
         },
         "networkProfile": {
@@ -838,8 +844,11 @@
           },
           "osDisk": {
             "name": "osdisk",
-            "caching": "ReadWrite",
-            "createOption": "FromImage"
+            "createOption": "FromImage",
+            "managedDisk": {
+              "storageAccountType": "Standard_LRS"
+            },
+            "caching": "ReadWrite"
           }
         },
         "networkProfile": {
