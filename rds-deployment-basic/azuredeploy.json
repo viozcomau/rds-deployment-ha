@@ -250,18 +250,21 @@
       "apiVersion": "2015-06-15",
       "type": "Microsoft.Compute/availabilitySets",
       "name": "[variables('gwAvailabilitySet')]",
+      "sku": "Aligned",
       "location": "[parameters('location')]"
     },
     {
       "apiVersion": "2015-06-15",
       "type": "Microsoft.Compute/availabilitySets",
       "name": "[variables('cbAvailabilitySet')]",
+      "sku": "Aligned",
       "location": "[parameters('location')]"
     },
     {
       "apiVersion": "2015-06-15",
       "type": "Microsoft.Compute/availabilitySets",
       "name": "[variables('rdshAvailabilitySet')]",
+      "sku": "Aligned",
       "location": "[parameters('location')]"
     },
     {
