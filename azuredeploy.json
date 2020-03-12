@@ -363,6 +363,9 @@
           "vmImageSku": {
             "value": "[parameters('vmImageSku')]"
           },
+          "vmGwSize": {
+            "value": "[parameters('vmGwSize')]"
+          },
           "availGwName": {
             "value": "[variables('availGwName')]"
           },
