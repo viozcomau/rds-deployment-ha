@@ -40,7 +40,7 @@
         "description": "the resource id of the subnet"
       }
     },
-    "adRDPNATRuleId": {
+    "lbAdNatRuleRdpId": {
       "type": "string",
       "metadata": {
         "description": "the resource id of the RDP NAT rule"
@@ -115,7 +115,7 @@
               },
               "loadBalancerInboundNatRules": [
                 {
-                  "id": "[parameters('adRDPNATRuleId')]"
+                  "id": "[parameters('lbAdNatRuleRdpId')]"
                 }
               ]
             }

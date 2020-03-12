@@ -171,7 +171,7 @@
           "location": {
             "value": "[parameters('location')]"
           },
-          "lbNameGw": {
+          "lbGwName": {
             "value": "[variables('loadBalancer')]"
           },
           "availGwName": {
