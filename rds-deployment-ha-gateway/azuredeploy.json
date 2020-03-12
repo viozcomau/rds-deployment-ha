@@ -115,7 +115,8 @@
         "imagePublisher": "MicrosoftWindowsServer",
         "imageOffer": "WindowsServer",
         "snetId": "[resourceId(parameters('rgName'), 'Microsoft.Network/virtualNetworks/subnets', parameters('vnetName'), parameters('snetName'))]",
-        "lbGwBeAddressPoolId": "[concat(resourceId(parameters('rgName'),'Microsoft.Network/loadBalancers',parameters('lbGwName')),'/backendAddressPools/',parameters('lbGwBe'))]",
+        "lbGwId": "[resourceId(parameters('rgName'), 'Microsoft.Network/loadBalancers', parameters('lbGwName'))]",
+        "lbGwBeAddressPoolId": "[concat(variables('lbGwId'),'/backendAddressPools/',parameters('lbGwBe'))]",
         "availGwId": "[resourceId(parameters('rgName'),'Microsoft.Compute/availabilitySets',parameters('availGwName'))]",
         "nicPrefix": "nic-",
         "assetLocation": "[parameters('_artifactsLocation')]"
