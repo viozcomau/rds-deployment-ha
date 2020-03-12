@@ -2,6 +2,13 @@
   "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
   "contentVersion": "1.0.0.0",
   "parameters": {
+    "projectName": {
+      "type": "string",
+      "metadata": {
+        "description": "Project name will be suffixed and tagged to resources"
+      },
+      "defaultValue": ""
+    },
     "gwdnsLabelPrefix": {
       "type": "string",
       "metadata": {
@@ -48,7 +55,7 @@
         "description": "Number of total Remote Desktop Session Hosts to create."
       }
     },
-    "rdshVmSize": {
+    "vmRdshSize": {
       "type": "string",
       "metadata": {
         "description": "The size of the RDSH VMs"
@@ -89,25 +96,33 @@
     "RdcbHaDeploymentexistingRDS": "configureRdcbHaonRDSDeployment",
     "RdcbHaDeploymentURL": "[concat(variables('RdcbHaDeploymentexistingRDSLocation'),'/',variables('RdcbHaDeploymentexistingRDSTemplate'))]",
 
-    "vnetName": "[concat('vnet-',resourceGroup().name)]",
-    "subnetName": "[concat('snet-',resourceGroup().name)]",
-    "loadBalancer": "loadBalancer",
-    "gatewaypublicIp": "gwpip",
+    "vmPrefix": "vm-",
+    "vnetPrefix": "vnet-",
+    "snetPrefix": "snet-",
+    "nsgPrefix": "nsg-",
+    "lbPrefix": "lb-",
+    "pipPrefix": "pip-",
+
+    "availabilitySetPrefix": "avail-",
+    "adName": "ad-1",
+    "gwName": "gw-1",
+    "cbName": "cb-1",
+    "vnetName": "[concat(variables('vnetPrefix'),parameters('projectName'))]",
+    "subnetName": "[concat(variables('subnetName'),parameters('projectName'))]",
+    "loadBalancer": "[concat(variables('lbPrefix'),'gw')]",
+    "gatewaypublicIp": "[concat(variables('pipPrefix'),'gw')]",
     "backEndAddressPool": "LBBAP",
-    "gwAvailabilitySet": "avail-gw",
-    "cbAvailabilitySet": "avail-cb",
+    "availGwName": "[concat(variables('availabilitySetPrefix'),'gw')]",
+    "availCbName": "[concat(variables('availabilitySetPrefix'),'cb')]",
 
+    "stDiagName": "[tolower(concat('rdsa', uniqueString(resourceGroup().id)))]",
+    "vmGwName": "[concat(variables('vmPrefix'), variables('gwName'))]",
+    "gwExternalFqdn": "[concat(variables('vmGwName'), '.', parameters('adDomainName'))]",
 
-    "storageAccountName": "[tolower(concat('rdsa', uniqueString(resourceGroup().id)))]",
+    "vmCbName": "[concat(variables('vmPrefix'),variables('cbName'))]",
+    "cbServerName": "[concat(variables('vmCbName'), '.', parameters('adDomainName'))]",
 
-    "gwVmName": "[concat(variables('vmPrefix'), 'gw-1')]",
-    "gwExternalFqdn": "[concat(variables('gwVmName'), '.', parameters('adDomainName'))]",
-
-    "cbVmName": "[concat(variables('vmPrefix'), 'cb-1')]",
-    "cbServerName": "[concat(variables('cbVmName'), '.', parameters('adDomainName'))]",
-
-    "brokerHostName": "[variables('cbVmName')]",
-    "vmPrefix": "vm-"
+    "brokerHostName": "[variables('vmCbName')]"
   },
   "resources": [
     {
@@ -150,23 +165,26 @@
           "numberOfRdshInstances": {
             "value": "[parameters('numberOfRdshInstances')]"
           },
-          "rdshVmSize": {
-            "value": "[parameters('rdshVmSize')]"
+          "vmRdshSize": {
+            "value": "[parameters('vmRdshSize')]"
           },
           "location": {
             "value": "[parameters('location')]"
           },
-          "gwAvailabilitySet": {
-            "value": "[variables('gwAvailabilitySet')]"
+          "lbNameGw": {
+            "value": "[variables('loadBalancer')]"
           },
-          "cbAvailabilitySet": {
-            "value": "[variables('cbAvailabilitySet')]"
+          "availGwName": {
+            "value": "[variables('availGwName')]"
           },
-          "gwVmName": {
-            "value": "[variables('gwVmName')]"
+          "availCbName": {
+            "value": "[variables('availCbName')]"
           },
-          "cbVmName": {
-            "value": "[variables('cbVmName')]"
+          "vmGwName": {
+            "value": "[variables('vmGwName')]"
+          },
+          "vmCbName": {
+            "value": "[variables('vmCbName')]"
           }
         }
       }

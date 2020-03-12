@@ -3,6 +3,61 @@
   "contentVersion": "1.0.0.0",
   "apiProfile": "2018-03-01-hybrid",
   "parameters": {
+    "vmName": {
+      "type": "string",
+      "metadata": {
+        "description": "The AD VM Name"
+      }
+    },
+    "storageAccount": {
+      "type": "string",
+      "metadata": {
+        "description": "The Storage Account Name for boot diagnosis"
+      }
+    },
+    "adminUsername": {
+      "type": "string",
+      "metadata": {
+        "description": "The name of the Administrator of the new VMs and Domain"
+      }
+    },
+    "adminPassword": {
+      "type": "securestring",
+      "metadata": {
+        "description": "The password for the Administrator account of the new VMs and Domain"
+      }
+    },
+    "vmSize": {
+      "type": "string",
+      "metadata": {
+        "description": "The size of the AD VMs Created"
+      },
+      "defaultValue": "Standard_B2ms"
+    },
+    "subnetResourceId": {
+      "type": "string",
+      "metadata": {
+        "description": "the resource id of the subnet"
+      }
+    },
+    "adRDPNATRuleId": {
+      "type": "string",
+      "metadata": {
+        "description": "the resource id of the RDP NAT rule"
+      }
+    },
+    "adDNicName": {
+      "type": "string",
+      "metadata": {
+        "description": "Name of the Nic attached to the ad VM"
+      }
+    },
+    "primaryAdIpAddress": {
+      "type": "string",
+      "metadata": {
+        "description": "PrimaryIPAddress if AD VM"
+      }
+    },
     "windowsImagePublisher": {
       "type": "string",
       "metadata": {
@@ -41,61 +96,6 @@
         "description": "Size of the VM data disk in GB"
       },
       "defaultValue": 2
-    },
-    "vmName": {
-      "type": "string",
-      "metadata": {
-        "description": "The VM Name"
-      }
-    },
-    "storageAccount": {
-      "type": "string",
-      "metadata": {
-        "description": "The Storage Account Name"
-      }
-    },
-    "adminUsername": {
-      "type": "string",
-      "metadata": {
-        "description": "The name of the Administrator of the new VMs and Domain"
-      }
-    },
-    "adminPassword": {
-      "type": "securestring",
-      "metadata": {
-        "description": "The password for the Administrator account of the new VMs and Domain"
-      }
-    },
-    "vmSize": {
-      "type": "string",
-      "metadata": {
-        "description": "The size of the AD VMs Created"
-      },
-      "defaultValue": "Standard_B2ms"
-    },
-    "subnetResourceID": {
-      "type": "string",
-      "metadata": {
-        "description": "the resource id of the subnet"
-      }
-    },
-    "adRDPNATRuleID": {
-      "type": "string",
-      "metadata": {
-        "description": "the resource id of the RDP NAT rule"
-      }
-    },
-    "adDNicName": {
-      "type": "string",
-      "metadata": {
-        "description": "Name of the Nic attached to the ad VM"
-      }
-    },
-    "primaryAdIpAddress": {
-      "type": "string",
-      "metadata": {
-        "description": "PrimaryIPAddress if AD VM"
-      }
     }
   },
   "resources": [
@@ -111,11 +111,11 @@
               "privateIPAllocationMethod": "Static",
               "privateIPAddress": "[parameters('primaryAdIpAddress')]",
               "subnet": {
-                "id": "[parameters('subnetResourceID')]"
+                "id": "[parameters('subnetResourceId')]"
               },
               "loadBalancerInboundNatRules": [
                 {
-                  "id": "[parameters('adRDPNATRuleID')]"
+                  "id": "[parameters('adRDPNATRuleId')]"
                 }
               ]
             }
@@ -147,13 +147,16 @@
             "version": "[parameters('windowsImageVersion')]"
           },
           "osDisk": {
-            "name": "[concat(parameters('vmName'), '1','-osdisk')]",
-            "caching": "ReadWrite",
-            "createOption": "FromImage"
+            "name": "[concat(parameters('vmName'),'-osdisk')]",
+            "createOption": "FromImage",
+            "managedDisk": {
+              "storageAccountType": "Standard_LRS"
+            },
+            "caching": "ReadWrite"
           },
           "dataDisks": [
             {
-              "name": "[concat(parameters('vmName'), '1','-data-disk1')]",
+              "name": "[concat(parameters('vmName'),'-data-disk1')]",
               "createOption": "Empty",
               "caching": "None",
               "diskSizeGB": "[parameters('dataDiskSize')]",
@@ -177,5 +180,6 @@
       }
     }
   ],
-  "outputs": {}
+  "outputs": {
+  }
 }
