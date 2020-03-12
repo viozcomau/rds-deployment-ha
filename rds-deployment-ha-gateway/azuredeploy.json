@@ -114,9 +114,8 @@
     "variables": {
         "imagePublisher": "MicrosoftWindowsServer",
         "imageOffer": "WindowsServer",
-        "subnet-id": "[resourceId(parameters('rgName'), 'Microsoft.Network/virtualNetworks/subnets', parameters('vnetName'), parameters('snetName'))]",
-        "lbGwId": "[resourceId(parameters('rgName'),'/Microsoft.Network/loadBalancers/',parameters('lbGwName'))]",
-        "lbGwBeAddressPoolId": "[concat(variables('lbGwId'),'/backendAddressPools/',parameters('lbGwBe'))]",
+        "snetId": "[resourceId(parameters('rgName'), 'Microsoft.Network/virtualNetworks/subnets', parameters('vnetName'), parameters('snetName'))]",
+        "lbGwBeAddressPoolId": "[resourceId(parameters('rgName'),'/Microsoft.Network/loadBalancers/backendAddressPools',parameters('lbGwName'),parameters('lbGwBe'))]",
         "availGwId": "[resourceId(parameters('rgName'),'/Microsoft.Compute/availabilitySets',parameters('availGwName'))]",
         "nicPrefix": "nic-",
         "assetLocation": "[parameters('_artifactsLocation')]"
@@ -138,7 +137,7 @@
                         "properties": {
                             "privateIPAllocationMethod": "Dynamic",
                             "subnet": {
-                                "id": "[variables('subnet-id')]"
+                                "id": "[variables('snetId')]"
                             },
                             "loadBalancerBackendAddressPools": [
                                 {
