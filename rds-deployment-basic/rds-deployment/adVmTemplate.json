@@ -46,7 +46,7 @@
         "description": "the resource id of the RDP NAT rule"
       }
     },
-    "adDNicName": {
+    "nicName": {
       "type": "string",
       "metadata": {
         "description": "Name of the Nic attached to the ad VM"
@@ -100,7 +100,7 @@
   },
   "resources": [
     {
-      "name": "[parameters('adDNicName')]",
+      "name": "[parameters('nicName')]",
       "type": "Microsoft.Network/networkInterfaces",
       "location": "[resourceGroup().location]",
       "properties": {
@@ -128,7 +128,7 @@
       "type": "Microsoft.Compute/virtualMachines",
       "location": "[resourceGroup().location]",
       "dependsOn": [
-        "[resourceId('Microsoft.Network/networkInterfaces',parameters('adDNicName'))]"
+        "[resourceId('Microsoft.Network/networkInterfaces',parameters('nicName'))]"
       ],
       "properties": {
         "hardwareProfile": {
@@ -167,7 +167,7 @@
         "networkProfile": {
           "networkInterfaces": [
             {
-              "id": "[resourceId('Microsoft.Network/networkInterfaces',parameters('adDNicName'))]"
+              "id": "[resourceId('Microsoft.Network/networkInterfaces',parameters('nicName'))]"
             }
           ]
         },

@@ -9,7 +9,7 @@
       },
       "defaultValue": "test"
     },
-    "gwdnsLabelPrefix": {
+    "gwDnsLabelPrefix": {
       "type": "string",
       "metadata": {
         "description": "Unique public DNS prefix for the deployment. The fqdn will look something like '<dnsname>.westus.cloudapp.azure.com'. Up to 62 chars, digits or dashes, lowercase, should start with a letter: must conform to '^[a-z][a-z0-9-]{1,61}[a-z0-9]$'. For example johndns1 will result the final RDWEB access url like https://johndns1.westus.cloudapp.azure.com/RDWeb"
@@ -23,7 +23,14 @@
       },
       "defaultValue": "contoso.com"
     },
-    "adminUserName": {
+    "domainNetbios": {
+      "type": "string",
+      "metadata": {
+        "description": "The name of the domain Netbios. For example contoso"
+      },
+      "defaultValue": "contoso"
+    },
+    "adminUsername": {
       "type": "string",
       "metadata": {
         "description": "The existing name of the administrator account in the domain. Exclusion list: 'administrator'. For example johnadmin"
@@ -37,7 +44,112 @@
       },
       "defaultValue": "[concat('Subscription#',subscription().subscriptionId)]"
     },
-    "imageSKU": {
+    "vmAdSize": {
+      "type": "string",
+      "metadata": {
+        "description": "The size of the RDSH VMs"
+      },
+      "allowedValues": [
+        "Standard_A1_v2",
+        "Standard_A2_v2",
+        "Standard_A2m_v2",
+        "Standard_A4_v2",
+        "Standard_A4m_v2",
+        "Standard_A8_v2",
+        "Standard_A8m_v2",
+        "Standard_D1_v2",
+        "Standard_D2_v2",
+        "Standard_D3_v2",
+        "Standard_D4_v2",
+        "Standard_D5_v2"
+      ],
+      "defaultValue": "Standard_A2_v2"
+    },
+    "vmGwSize": {
+      "type": "string",
+      "metadata": {
+        "description": "The size of the RDSH VMs"
+      },
+      "allowedValues": [
+        "Standard_A1_v2",
+        "Standard_A2_v2",
+        "Standard_A2m_v2",
+        "Standard_A4_v2",
+        "Standard_A4m_v2",
+        "Standard_A8_v2",
+        "Standard_A8m_v2",
+        "Standard_D1_v2",
+        "Standard_D2_v2",
+        "Standard_D3_v2",
+        "Standard_D4_v2",
+        "Standard_D5_v2"
+      ],
+      "defaultValue": "Standard_A2_v2"
+    },
+    "numberOfGwInstances": {
+      "type": "int",
+      "defaultValue": 1,
+      "metadata": {
+        "description": "Number of additional RD Gateway / RD Web Access servers. value of 1 will give a total of 2 for HA."
+      }
+    },
+    "vmCbSize": {
+      "type": "string",
+      "metadata": {
+        "description": "The size of the RDSH VMs"
+      },
+      "allowedValues": [
+        "Standard_A1_v2",
+        "Standard_A2_v2",
+        "Standard_A2m_v2",
+        "Standard_A4_v2",
+        "Standard_A4m_v2",
+        "Standard_A8_v2",
+        "Standard_A8m_v2",
+        "Standard_D1_v2",
+        "Standard_D2_v2",
+        "Standard_D3_v2",
+        "Standard_D4_v2",
+        "Standard_D5_v2"
+      ],
+      "defaultValue": "Standard_A2_v2"
+    },
+    "numberOfCbInstances": {
+      "type": "int",
+      "defaultValue": 2,
+      "metadata": {
+        "description": "Number of total Remote Desktop Session Hosts to create."
+      }
+    },
+    "vmShSize": {
+      "type": "string",
+      "metadata": {
+        "description": "The size of the RDSH VMs"
+      },
+      "allowedValues": [
+        "Standard_A1_v2",
+        "Standard_A2_v2",
+        "Standard_A2m_v2",
+        "Standard_A4_v2",
+        "Standard_A4m_v2",
+        "Standard_A8_v2",
+        "Standard_A8m_v2",
+        "Standard_D1_v2",
+        "Standard_D2_v2",
+        "Standard_D3_v2",
+        "Standard_D4_v2",
+        "Standard_D5_v2"
+      ],
+      "defaultValue": "Standard_A2_v2"
+    },
+    "numberOfShInstances": {
+      "type": "int",
+      "defaultValue": 2,
+      "metadata": {
+        "description": "Number of total Remote Desktop Session Hosts to create."
+      }
+    },
+    "vmImageSku": {
       "type": "string",
       "allowedValues": [
         "2012-R2-Datacenter",
@@ -47,27 +159,6 @@
         "description": "Windows server SKU"
       },
       "defaultValue": "2016-Datacenter"
-    },
-    "numberOfRdshInstances": {
-      "type": "int",
-      "defaultValue": 2,
-      "metadata": {
-        "description": "Number of total Remote Desktop Session Hosts to create."
-      }
-    },
-    "vmRdshSize": {
-      "type": "string",
-      "metadata": {
-        "description": "The size of the RDSH VMs"
-      },
-      "defaultValue": "Standard_A2_v2"
-    },
-    "numberOfWebGwInstances": {
-      "type": "int",
-      "defaultValue": 1,
-      "metadata": {
-        "description": "Number of additional RD Gateway / RD Web Access servers. value of 1 will give a total of 2 for HA."
-      }
     },
     "location": {
       "type": "string",
@@ -99,28 +190,37 @@
     "vmPrefix": "vm-",
     "vnetPrefix": "vnet-",
     "snetPrefix": "snet-",
-    "nsgPrefix": "nsg-",
     "lbPrefix": "lb-",
     "pipPrefix": "pip-",
+    "availPrefix": "avail-",
 
-    "availabilitySetPrefix": "avail-",
     "adName": "ad-1",
     "gwName": "gw-1",
     "cbName": "cb-1",
+    "shName": "sh-",
+
     "vnetName": "[concat(variables('vnetPrefix'),parameters('projectName'))]",
     "snetName": "[concat(variables('snetPrefix'),parameters('projectName'))]",
-    "loadBalancer": "[concat(variables('lbPrefix'),'gw')]",
-    "gatewaypublicIp": "[concat(variables('pipPrefix'),'gw')]",
-    "backEndAddressPool": "LBBAP",
-    "availGwName": "[concat(variables('availabilitySetPrefix'),'gw')]",
-    "availCbName": "[concat(variables('availabilitySetPrefix'),'cb')]",
 
-    "stDiagName": "[tolower(concat('rdsa', uniqueString(resourceGroup().id)))]",
+    "pipLbGwName": "[concat(variables('pipPrefix'),'gw')]",
+
+    "lbGwName": "[concat(variables('lbPrefix'),'gw')]",
+    "lbGwBe": "[concat(variables('lbGwName'),'-be')]",
+
+
+    "availGwName": "[concat(variables('availPrefix'),'gw')]",
+    "availCbName": "[concat(variables('availPrefix'),'cb')]",
+
+    "stDiagName": "[tolower(concat('stdiag',uniqueString(resourceGroup().id)))]",
+
+    "vmAdName": "[concat(variables('vmPrefix'), variables('adName'))]",
     "vmGwName": "[concat(variables('vmPrefix'), variables('gwName'))]",
-    "gwExternalFqdn": "[concat(variables('vmGwName'), '.', parameters('adDomainName'))]",
+    "vmCbName": "[concat(variables('vmPrefix'), variables('cbName'))]",
+    "vmShName": "[concat(variables('vmPrefix'), variables('shName'))]",
 
-    "vmCbName": "[concat(variables('vmPrefix'),variables('cbName'))]",
-    "cbServerName": "[concat(variables('vmCbName'), '.', parameters('adDomainName'))]",
+    "adFqdnServerName": "[concat(variables('vmAdName'), '.', parameters('adDomainName'))]",
+    "gwExternalFqdn": "[concat(variables('vmGwName'), '.', parameters('adDomainName'))]",
+    "cbFqdnServerName": "[concat(variables('vmCbName'), '.', parameters('adDomainName'))]",
 
     "brokerHostName": "[variables('vmCbName')]"
   },
@@ -141,8 +241,8 @@
           "_artifactsLocation": {
             "value": "[variables('basicRDSDeploymentLocation')]"
           },
-          "gwdnsLabelPrefix": {
-            "value": "[parameters('gwdnsLabelPrefix')]"
+          "gwDnsLabelPrefix": {
+            "value": "[parameters('gwDnsLabelPrefix')]"
           },
           "adDomainName": {
             "value": "[parameters('adDomainName')]"
@@ -153,26 +253,17 @@
           "snetName": {
             "value": "[variables('snetName')]"
           },
-          "adminUsername": {
-            "value": "[parameters('adminUserName')]"
+          "stDiagName": {
+            "value": "[variables('stDiagName')]"
           },
-          "adminPassword": {
-            "value": "[parameters('adminPassword')]"
-          },
-          "imageSKU": {
-            "value": "[parameters('imageSKU')]"
-          },
-          "numberOfRdshInstances": {
-            "value": "[parameters('numberOfRdshInstances')]"
-          },
-          "vmRdshSize": {
-            "value": "[parameters('vmRdshSize')]"
-          },
-          "location": {
-            "value": "[parameters('location')]"
+          "pipLbGwName": {
+            "value": "[variables('pipLbGwName')]"
           },
           "lbGwName": {
-            "value": "[variables('loadBalancer')]"
+            "value": "[variables('lbGwName')]"
+          },
+          "lbGwBe": {
+            "value": "[variables('lbGwBe')]"
           },
           "availGwName": {
             "value": "[variables('availGwName')]"
@@ -180,11 +271,44 @@
           "availCbName": {
             "value": "[variables('availCbName')]"
           },
+          "adminUsername": {
+            "value": "[parameters('adminUsername')]"
+          },
+          "adminPassword": {
+            "value": "[parameters('adminPassword')]"
+          },
+          "vmAdSize": {
+            "value": "[parameters('vmAdSize')]"
+          },
+          "vmGwSize": {
+            "value": "[parameters('vmGwSize')]"
+          },
+          "vmCbSize": {
+            "value": "[parameters('vmCbSize')]"
+          },
+          "vmShSize": {
+            "value": "[parameters('vmShSize')]"
+          },
+          "numberOfShInstances": {
+            "value": "[parameters('numberOfShInstances')]"
+          },
+          "vmImageSku": {
+            "value": "[parameters('vmImageSku')]"
+          },
+          "vmAdName": {
+            "value": "[variables('vmAdName')]"
+          },
           "vmGwName": {
             "value": "[variables('vmGwName')]"
           },
           "vmCbName": {
             "value": "[variables('vmCbName')]"
+          },
+          "vmShName": {
+            "value": "[variables('vmShName')]"
+          },
+          "location": {
+            "value": "[parameters('location')]"
           }
         }
       }

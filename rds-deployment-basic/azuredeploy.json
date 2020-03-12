@@ -36,70 +36,16 @@
       },
       "defaultValue": "subnet"
     },
-    "adminUsername": {
-      "type": "string",
-      "metadata": {
-        "description": "The name of the administrator of the new VM and the domain. Exclusion list: 'administrator'. For example johnadmin"
-      },
-      "defaultValue": "vmadmin"
+    "stDiagName": {
+      "type": "string"
     },
-    "adminPassword": {
-      "type": "securestring",
-      "metadata": {
-        "description": "The password for the administrator account of the new VM and the domain"
-      },
-      "defaultValue": "[concat('Subscription#',subscription().subscriptionId)]"
-    },
-    "imageSKU": {
-      "type": "string",
-      "allowedValues": [
-        "2012-R2-Datacenter",
-        "2016-Datacenter"
-      ],
-      "metadata": {
-        "description": "Windows server SKU"
-      },
-      "defaultValue": "2016-Datacenter"
-    },
-    "numberOfRdshInstances": {
-      "type": "int",
-      "defaultValue": 1,
-      "metadata": {
-        "description": "Number of RemoteDesktopSessionHosts"
-      }
-    },
-    "vmRdshSize": {
-      "type": "string",
-      "allowedValues": [
-        "Standard_A1_v2",
-        "Standard_A2_v2",
-        "Standard_A4_v2",
-        "Standard_A8_v2",
-        "Standard_A2m_v2",
-        "Standard_A4m_v2",
-        "Standard_A8m_v2",
-        "Standard_B2ms",
-        "Standard_D2_v3",
-        "Standard_D4_v3",
-        "Standard_D8_v3",
-        "Standard_D16_v3",
-        "Standard_D32_v3",
-        "Standard_D48_v3",
-        "Standard_D64_v3"
-      ],
-      "metadata": {
-        "description": "The size of the RDSH VMs"
-      },
-      "defaultValue": "Standard_A4m_v2"
-    },
-    "location": {
-      "type": "string",
-      "defaultValue": "[resourceGroup().location]",
-      "metadata": {
-        "description": "Location for all resources."
-      }
+    "pipLbGwName": {
+      "type": "string"
     },
     "lbGwName": {
+      "type": "string"
+    },
+    "lbGwBe": {
       "type": "string"
     },
     "availGwName": {
@@ -114,44 +60,104 @@
         "description": "Number of RemoteDesktopSessionHosts"
       }
     },
+    "adminUsername": {
+      "type": "string",
+      "metadata": {
+        "description": "The name of the administrator of the new VM and the domain. Exclusion list: 'administrator'. For example johnadmin"
+      },
+      "defaultValue": "vmadmin"
+    },
+    "adminPassword": {
+      "type": "securestring",
+      "metadata": {
+        "description": "The password for the administrator account of the new VM and the domain"
+      },
+      "defaultValue": "[concat('Subscription#',subscription().subscriptionId)]"
+    },
+    "vmAdSize": {
+      "type": "string"
+    },
+    "vmGwSize": {
+      "type": "string"
+    },
+    "vmCbSize": {
+      "type": "string"
+    },
+    "vmShSize": {
+      "type": "string",
+      "metadata": {
+        "description": "The size of the RDSH VMs"
+      }
+    },
+    "numberOfShInstances": {
+      "type": "int",
+      "defaultValue": 1,
+      "metadata": {
+        "description": "Number of RemoteDesktopSessionHosts"
+      }
+    },
+    "vmImageSku": {
+      "type": "string",
+      "allowedValues": [
+        "2012-R2-Datacenter",
+        "2016-Datacenter"
+      ],
+      "metadata": {
+        "description": "Windows server SKU"
+      },
+      "defaultValue": "2016-Datacenter"
+    },
+    "vmAdName": {
+      "type": "string",
+      "metadata": {
+        "description": "Number of RemoteDesktopSessionHosts"
+      }
+    },
     "vmGwName": {
       "type": "string",
       "metadata": {
         "description": "Number of RemoteDesktopSessionHosts"
       }
     },
-
     "vmCbName": {
       "type": "string",
       "metadata": {
         "description": "Number of RemoteDesktopSessionHosts"
       }
+    },
+    "vmShName": {
+      "type": "string",
+      "metadata": {
+        "description": "Number of RemoteDesktopSessionHosts"
+      }
+    },
+    "location": {
+      "type": "string",
+      "defaultValue": "[resourceGroup().location]",
+      "metadata": {
+        "description": "Location for all resources."
+      }
     }
   },
   "variables": {
     "assetLocation": "[concat(parameters('_artifactsLocation'),'/','rds-deployment')]",
-    "vmPrefix": "vm-",
     "pipPrefix": "pip-",
     "nicPrefix": "nic-",
-    "adName": "ad-1",
-    "adPDCVMName": "[concat(variables('vmPrefix'),variables('adName'))]",
-    "adVMSize": "Standard_B2ms",
+
     "adTemplateURL": "[concat(variables('assetLocation'),'/adVmTemplate.json')]",
     "adVmDeployment": "CreateAdVms",
     "adVmDeploymentId": "[concat('Microsoft.Resources/deployments/', variables('adVmDeployment'))]",
     "deployPrimaryAdTemplateURL": "[concat(variables('assetLocation'),'/deployPrimaryAD.json')]",
     "deployPrimaryAd": "DeployPrimaryAd",
     "deployPrimaryAdID": "[concat('Microsoft.Resources/deployments/', variables('deployPrimaryAd'))]",
-
     "vnetwithDNSTemplateURL": "[concat(variables('assetLocation'),'/vnet-with-dns-server.json')]",
     "updateVNetDNS1": "updateVNetDNS",
 
-    "pipLbAdName": "[concat(variables('pipPrefix'),variables('adName'))]",
+    "pipLbAdName": "[concat(variables('pipPrefix'),parameters('vmAdName'))]",
     "pipLbAdId": "[resourceId('Microsoft.Network/publicIPAddresses',variables('pipLbAdName'))]",
-    "pipLbGwName": "[tolower('pip-gw')]",
-    "pipLbGwId": "[resourceId('Microsoft.Network/publicIPAddresses',variables('pipLbGwName'))]",
+    "pipLbGwId": "[resourceId('Microsoft.Network/publicIPAddresses',parameters('pipLbGwName'))]",
 
-    "lbAdName": "[concat('lb-ad-',resourceGroup().name)]",
+    "lbAdName": "[concat('lb-ad')]",
     "lbAdId": "[resourceId('Microsoft.Network/loadBalancers',variables('lbAdName'))]",
     "lbAdFe": "lb-ad-fe",
     "lbAdFeConfigId": "[concat(variables('lbAdId'),'/frontendIPConfigurations/',variables('lbAdFe'))]",
@@ -160,32 +166,31 @@
     "lbAdNatRuleRdpName": "ADRDPNAT",
     "lbAdNatRuleRdpId": "[concat(variables('lbAdId'),'/inboundNatRules/',variables('lbAdNatRuleRdpName'))]",
 
-    "lbGwName": "[concat('lb-gw',resourceGroup().name)]",
-    "lbGwId": "[resourceId('Microsoft.Network/loadBalancers',variables('lbGwName'))]",
+    "lbGwId": "[resourceId('Microsoft.Network/loadBalancers',parameters('lbGwName'))]",
     "lbGwFe": "[concat(parameters('lbGwName'),'-fe')]",
     "lbGwFeConfigId": "[concat(variables('lbGwId'),'/frontendIPConfigurations/',variables('lbGwFe'))]",
-    "lbGwBe": "[concat(parameters('lbGwName'),'-be')]",
-    "lbGwBeAddressPoolId": "[concat(variables('lbGwId'),'/backendAddressPools/',variables('lbGwBe'))]",
+    "lbGwBeAddressPoolId": "[concat(variables('lbGwId'),'/backendAddressPools/',parameters('lbGwBe'))]",
 
-    "dnsLabelPrefix": "[tolower(concat('dns', resourceGroup().name))]",
-    "storageAccountName": "[tolower(concat('stdiag',uniqueString(resourceGroup().id)))]",
+    "dnsLabelPrefix": "[tolower(concat('dns-', parameters('vmAdName')))]",
     "storageAccountType": "Standard_LRS",
     "imagePublisher": "MicrosoftWindowsServer",
     "imageOffer": "WindowsServer",
+
     "vnetAddressRange": "10.21.0.0/16",
     "snetAddressRange": "10.21.0.0/24",
     "dnsServerPrivateIp": "10.21.0.4",
     "snetId": "[concat(resourceId('Microsoft.Network/virtualNetworks', parameters('vnetName')),'/subnets/', parameters('snetName'))]",
 
     "nsgName": "nsg-rds",
-    "availabilitySetPlatformFaultDomainCount": "2",
-    "availabilitySetPlatformUpdateDomainCount": "5",
-    "availRdshName": "avail-rdsh",
-    "nicAdName": "[concat('nic-ad-',resourceGroup().name)]",
+    "availPlatformFaultDomainCount": "2",
+    "availPlatformUpdateDomainCount": "5",
+    "availShName": "avail-rdsh",
+
+    "nicAdName": "[concat(variables('nicPrefix'),parameters('vmAdName'))]",
     "nicGwName": "[concat(variables('nicPrefix'),parameters('vmGwName'))]",
     "nicCbName": "[concat(variables('nicPrefix'),parameters('vmCbName'))]",
-    "nicRdshName": "nic-rdsh-",
-    "vmRdshName": "vm-rdsh-",
+    "nicShName": "[concat(variables('nicPrefix'),parameters('vmShName'))]",
+
     "nsgID": "[resourceId('Microsoft.Network/networkSecurityGroups',variables('nsgName'))]"
   },
   "resources": [
@@ -255,7 +260,7 @@
       }
     },
     {
-      "name": "[variables('pipLbGwName')]",
+      "name": "[parameters('pipLbGwName')]",
       "type": "Microsoft.Network/publicIPAddresses",
       "location": "[parameters('location')]",
       "apiVersion": "2015-06-15",
@@ -275,8 +280,8 @@
       "name": "[parameters('availGwName')]",
       "location": "[parameters('location')]",
       "properties": {
-        "platformFaultDomainCount": "[variables('availabilitySetPlatformFaultDomainCount')]",
-        "platformUpdateDomainCount": "[variables('availabilitySetPlatformUpdateDomainCount')]"
+        "platformFaultDomainCount": "[variables('availPlatformFaultDomainCount')]",
+        "platformUpdateDomainCount": "[variables('availPlatformUpdateDomainCount')]"
       },
       "sku": {
         "name": "Aligned"
@@ -288,8 +293,8 @@
       "name": "[parameters('availCbName')]",
       "location": "[parameters('location')]",
       "properties": {
-        "platformFaultDomainCount": "[variables('availabilitySetPlatformFaultDomainCount')]",
-        "platformUpdateDomainCount": "[variables('availabilitySetPlatformUpdateDomainCount')]"
+        "platformFaultDomainCount": "[variables('availPlatformFaultDomainCount')]",
+        "platformUpdateDomainCount": "[variables('availPlatformUpdateDomainCount')]"
       },
       "sku": {
         "name": "Aligned"
@@ -298,11 +303,11 @@
     {
       "apiVersion": "2017-03-30",
       "type": "Microsoft.Compute/availabilitySets",
-      "name": "[variables('availRdshName')]",
+      "name": "[variables('availShName')]",
       "location": "[parameters('location')]",
       "properties": {
-        "platformFaultDomainCount": "[variables('availabilitySetPlatformFaultDomainCount')]",
-        "platformUpdateDomainCount": "[variables('availabilitySetPlatformUpdateDomainCount')]"
+        "platformFaultDomainCount": "[variables('availPlatformFaultDomainCount')]",
+        "platformUpdateDomainCount": "[variables('availPlatformUpdateDomainCount')]"
       },
       "sku": {
         "name": "Aligned"
@@ -311,7 +316,7 @@
     {
       "apiVersion": "2015-06-15",
       "type": "Microsoft.Storage/storageAccounts",
-      "name": "[variables('storageAccountName')]",
+      "name": "[parameters('stDiagName')]",
       "location": "[parameters('location')]",
       "properties": {
         "accountType": "[variables('storageAccountType')]"
@@ -358,7 +363,7 @@
       }
     },
     {
-      "name": "[variables('lbGwName')]",
+      "name": "[parameters('lbGwName')]",
       "type": "Microsoft.Network/loadBalancers",
       "apiVersion": "2015-06-15",
       "location": "[parameters('location')]",
@@ -378,7 +383,7 @@
         ],
         "backendAddressPools": [
           {
-            "name": "[variables('lbGwBe')]"
+            "name": "[parameters('lbGwBe')]"
           }
         ],
         "loadBalancingRules": [
@@ -465,7 +470,7 @@
       "apiVersion": "2016-02-01",
       "dependsOn": [
         "[variables('lbAdId')]",
-        "[concat('Microsoft.Storage/storageAccounts/', variables('storageAccountName'))]"
+        "[concat('Microsoft.Storage/storageAccounts/', parameters('stDiagName'))]"
       ],
       "properties": {
         "mode": "Incremental",
@@ -475,10 +480,10 @@
         },
         "parameters": {
           "vmName": {
-            "value": "[variables('adPDCVMName')]"
+            "value": "[parameters('vmAdName')]"
           },
           "storageAccount": {
-            "value": "[variables('storageAccountName')]"
+            "value": "[parameters('stDiagName')]"
           },
           "adminUsername": {
             "value": "[parameters('adminUsername')]"
@@ -487,7 +492,7 @@
             "value": "[parameters('adminPassword')]"
           },
           "vmSize": {
-            "value": "[variables('adVMSize')]"
+            "value": "[parameters('vmAdSize')]"
           },
           "subnetResourceId": {
             "value": "[variables('snetId')]"
@@ -495,7 +500,7 @@
           "lbAdNatRuleRdpId": {
             "value": "[variables('lbAdNatRuleRdpId')]"
           },
-          "adDNicName": {
+          "nicName": {
             "value": "[variables('nicAdName')]"
           },
           "primaryAdIpAddress": {
@@ -518,8 +523,8 @@
           "contentVersion": "1.0.0.0"
         },
         "parameters": {
-          "primaryADName": {
-            "value": "[variables('adPDCVMName')]"
+          "primaryAdName": {
+            "value": "[parameters('vmAdName')]"
           },
           "domainName": {
             "value": "[parameters('adDomainName')]"
@@ -639,11 +644,11 @@
     {
       "apiVersion": "2015-06-15",
       "type": "Microsoft.Network/networkInterfaces",
-      "name": "[concat(variables('nicRdshName'), copyindex(1))]",
+      "name": "[concat(variables('nicShName'), copyindex(1))]",
       "location": "[parameters('location')]",
       "copy": {
         "name": "nic-loop-rdsh",
-        "count": "[parameters('numberOfRdshInstances')]"
+        "count": "[parameters('numberOfShInstances')]"
       },
       "dependsOn": [
         "[variables('lbAdId')]",
@@ -675,12 +680,12 @@
       "location": "[parameters('location')]",
       "dependsOn": [
         "[variables('deployPrimaryAdID')]",
-        "[concat('Microsoft.Storage/storageAccounts/', variables('storageAccountName'))]",
+        "[concat('Microsoft.Storage/storageAccounts/', parameters('stDiagName'))]",
         "[concat('Microsoft.Network/networkInterfaces/', variables('nicGwName'))]"
       ],
       "properties": {
         "hardwareProfile": {
-          "vmSize": "Standard_B2ms"
+          "vmSize": "[parameters('vmGwSize')]"
         },
         "availabilitySet": {
           "id": "[resourceId('Microsoft.Compute/availabilitySets', parameters('availGwName'))]"
@@ -694,7 +699,7 @@
           "imageReference": {
             "publisher": "[variables('imagePublisher')]",
             "offer": "[variables('imageOffer')]",
-            "sku": "[parameters('imageSKU')]",
+            "sku": "[parameters('vmImageSku')]",
             "version": "latest"
           },
           "osDisk": {
@@ -716,7 +721,7 @@
         "diagnosticsProfile": {
           "bootDiagnostics": {
             "enabled": true,
-            "storageUri": "[concat('http://', variables('storageAccountName'), '.blob.core.windows.net')]"
+            "storageUri": "[concat('http://', parameters('stDiagName'), '.blob.core.windows.net')]"
           }
         }
       },
@@ -757,23 +762,23 @@
     {
       "apiVersion": "2018-10-01",
       "type": "Microsoft.Compute/virtualMachines",
-      "name": "[concat(variables('vmRdshName'), copyindex(1))]",
+      "name": "[concat(parameters('vmShName'), copyindex(1))]",
       "location": "[parameters('location')]",
       "copy": {
         "name": "rdsh-vm-loop",
-        "count": "[parameters('numberOfRdshInstances')]"
+        "count": "[parameters('numberOfShInstances')]"
       },
       "dependsOn": [
         "[variables('deployPrimaryAdID')]",
-        "[concat('Microsoft.Storage/storageAccounts/', variables('storageAccountName'))]",
-        "[concat('Microsoft.Network/networkInterfaces/', variables('nicRdshName'), copyindex(1))]"
+        "[concat('Microsoft.Storage/storageAccounts/', parameters('stDiagName'))]",
+        "[concat('Microsoft.Network/networkInterfaces/', variables('nicShName'), copyindex(1))]"
       ],
       "properties": {
         "hardwareProfile": {
-          "vmSize": "[parameters('vmRdshSize')]"
+          "vmSize": "[parameters('vmShSize')]"
         },
         "availabilitySet": {
-          "id": "[resourceId('Microsoft.Compute/availabilitySets', variables('availRdshName'))]"
+          "id": "[resourceId('Microsoft.Compute/availabilitySets', variables('availShName'))]"
         },
         "osProfile": {
           "computerName": "[concat('rdsh-', copyindex(1))]",
@@ -784,7 +789,7 @@
           "imageReference": {
             "publisher": "[variables('imagePublisher')]",
             "offer": "[variables('imageOffer')]",
-            "sku": "[parameters('imageSKU')]",
+            "sku": "[parameters('vmImageSku')]",
             "version": "latest"
           },
           "osDisk": {
@@ -799,14 +804,14 @@
         "networkProfile": {
           "networkInterfaces": [
             {
-              "id": "[resourceId('Microsoft.Network/networkInterfaces',concat(variables('nicRdshName'), copyindex(1)))]"
+              "id": "[resourceId('Microsoft.Network/networkInterfaces',concat(variables('nicShName'), copyindex(1)))]"
             }
           ]
         },
         "diagnosticsProfile": {
           "bootDiagnostics": {
             "enabled": true,
-            "storageUri": "[concat('http://', variables('storageAccountName'), '.blob.core.windows.net')]"
+            "storageUri": "[concat('http://', parameters('stDiagName'), '.blob.core.windows.net')]"
           }
         }
       },
@@ -814,10 +819,10 @@
         {
           "apiVersion": "2018-10-01",
           "type": "Microsoft.Compute/virtualMachines/extensions",
-          "name": "[concat(variables('vmRdshName'), copyindex(1),'/sessionhost')]",
+          "name": "[concat(parameters('vmShName'), copyindex(1),'/sessionhost')]",
           "location": "[parameters('location')]",
           "dependsOn": [
-            "[resourceId('Microsoft.Compute/virtualMachines', concat(variables('vmRdshName'), copyindex(1)))]"
+            "[resourceId('Microsoft.Compute/virtualMachines', concat(parameters('vmShName'), copyindex(1)))]"
           ],
           "properties": {
             "publisher": "Microsoft.Powershell",
@@ -851,13 +856,13 @@
       "location": "[parameters('location')]",
       "dependsOn": [
         "[variables('deployPrimaryAdID')]",
-        "[concat('Microsoft.Storage/storageAccounts/', variables('storageAccountName'))]",
+        "[concat('Microsoft.Storage/storageAccounts/', parameters('stDiagName'))]",
         "[concat('Microsoft.Network/networkInterfaces/', variables('nicCbName'))]",
         "rdsh-vm-loop"
       ],
       "properties": {
         "hardwareProfile": {
-          "vmSize": "Standard_B2ms"
+          "vmSize": "[parameters('vmCbSize')]"
         },
         "availabilitySet": {
           "id": "[resourceId('Microsoft.Compute/availabilitySets', parameters('availCbName'))]"
@@ -871,7 +876,7 @@
           "imageReference": {
             "publisher": "[variables('imagePublisher')]",
             "offer": "[variables('imageOffer')]",
-            "sku": "[parameters('imageSKU')]",
+            "sku": "[parameters('vmImageSku')]",
             "version": "latest"
           },
           "osDisk": {
@@ -893,7 +898,7 @@
         "diagnosticsProfile": {
           "bootDiagnostics": {
             "enabled": true,
-            "storageUri": "[concat('http://', variables('storageAccountName'), '.blob.core.windows.net')]"
+            "storageUri": "[concat('http://', parameters('stDiagName'), '.blob.core.windows.net')]"
           }
         }
       }
@@ -926,8 +931,8 @@
             },
             "connectionBroker": "[concat('broker.',parameters('adDomainName'))]",
             "domainName": "[parameters('adDomainName')]",
-            "externalfqdn": "[reference(variables('pipLbGwName')).dnsSettings.fqdn]",
-            "numberOfRdshInstances": "[parameters('numberOfRdshInstances')]",
+            "externalfqdn": "[reference(parameters('pipLbGwName')).dnsSettings.fqdn]",
+            "numberOfShInstances": "[parameters('numberOfShInstances')]",
             "sessionHostNamingPrefix": "rdsh-",
             "webAccessServer": "[concat('gateway.',parameters('adDomainName'))]"
           }

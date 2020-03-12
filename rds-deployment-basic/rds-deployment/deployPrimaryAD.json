@@ -3,7 +3,7 @@
   "contentVersion": "1.0.0.0",
   "apiProfile": "2018-03-01-hybrid",
   "parameters": {
-    "primaryADName": {
+    "primaryAdName": {
       "type": "string",
       "metadata": {
         "description": "The VM name of Primary AD"
@@ -41,14 +41,14 @@
   },
   "resources": [
     {
-      "name": "[concat(parameters('primaryADName'),'/InstallDomainController')]",
+      "name": "[concat(parameters('primaryAdName'),'/InstallDomainController')]",
       "type": "Microsoft.Compute/virtualMachines/extensions",
       "location": "[resourceGroup().location]",
       "properties": {
         "publisher": "Microsoft.Powershell",
         "type": "DSC",
         "typeHandlerVersion": "2.8",
-        "autoUpgradeMinorVersion": "true",
+        "autoUpgradeMinorVersion": true,
         "settings": {
           "modulesUrl": "[variables('adPDCModulesURL')]",
           "configurationFunction": "[variables('adPDCConfigurationFunction')]",
