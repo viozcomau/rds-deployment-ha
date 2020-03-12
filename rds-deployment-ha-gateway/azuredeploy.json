@@ -162,7 +162,7 @@
                 "count": "[parameters('numberOfGwInstances')]"
             },
             "dependsOn": [
-                "[concat('Microsoft.Network/networkInterfaces/',variables('nicPrefix'),'gw-', copyindex(2))]"
+                "[concat('Microsoft.Network/networkInterfaces/',variables('nicPrefix'),'gw-vm-', copyindex(2))]"
             ],
             "properties": {
                 "hardwareProfile": {
@@ -195,7 +195,7 @@
                 "networkProfile": {
                     "networkInterfaces": [
                         {
-                            "id": "[resourceId('Microsoft.Network/networkInterfaces',concat(variables('nicPrefix'),'gw-',copyindex(2)))]"
+                            "id": "[resourceId('Microsoft.Network/networkInterfaces',concat(variables('nicPrefix'),'gw-vm-',copyindex(2)))]"
                         }
                     ]
                 }
