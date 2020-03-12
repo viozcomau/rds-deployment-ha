@@ -184,7 +184,7 @@
     "nsgName": "nsg-rds",
     "availPlatformFaultDomainCount": "2",
     "availPlatformUpdateDomainCount": "5",
-    "availShName": "avail-rdsh",
+    "availShName": "avail-sh-1",
 
     "nicAdName": "[concat(variables('nicPrefix'),parameters('vmAdName'))]",
     "nicGwName": "[concat(variables('nicPrefix'),parameters('vmGwName'))]",
@@ -781,7 +781,7 @@
           "id": "[resourceId('Microsoft.Compute/availabilitySets', variables('availShName'))]"
         },
         "osProfile": {
-          "computerName": "[concat('rdsh-', copyindex(1))]",
+          "computerName": "[concat(parameters('vmShName'),copyindex(1),'-osdisk')]",
           "adminUsername": "[parameters('adminUsername')]",
           "adminPassword": "[parameters('adminPassword')]"
         },

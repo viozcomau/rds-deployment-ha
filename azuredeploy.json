@@ -194,10 +194,10 @@
     "pipPrefix": "pip-",
     "availPrefix": "avail-",
 
-    "adName": "ad-1",
-    "gwName": "gw-1",
-    "cbName": "cb-1",
-    "shName": "sh-",
+    "adName": "ad",
+    "gwName": "gw",
+    "cbName": "cb",
+    "shName": "sh",
 
     "vnetName": "[concat(variables('vnetPrefix'),parameters('projectName'))]",
     "snetName": "[concat(variables('snetPrefix'),parameters('projectName'))]",
@@ -213,10 +213,10 @@
 
     "stDiagName": "[tolower(concat('stdiag',uniqueString(resourceGroup().id)))]",
 
-    "vmAdName": "[concat(variables('vmPrefix'), variables('adName'))]",
-    "vmGwName": "[concat(variables('vmPrefix'), variables('gwName'))]",
-    "vmCbName": "[concat(variables('vmPrefix'), variables('cbName'))]",
-    "vmShName": "[concat(variables('vmPrefix'), variables('shName'))]",
+    "vmAdName": "[concat(variables('vmPrefix'), variables('adName'),'-1')]",
+    "vmGwName": "[concat(variables('vmPrefix'), variables('gwName'),'-1')]",
+    "vmCbName": "[concat(variables('vmPrefix'), variables('cbName'),'-1')]",
+    "vmShName": "[concat(variables('vmPrefix'), variables('shName'),'-')]",
 
     "adFqdnServerName": "[concat(variables('vmAdName'), '.', parameters('adDomainName'))]",
     "gwExternalFqdn": "[concat(variables('vmGwName'), '.', parameters('adDomainName'))]",
@@ -309,6 +309,74 @@
           },
           "location": {
             "value": "[parameters('location')]"
+          }
+        }
+      }
+    },
+    {
+      "name": "[variables('rdGatewayWebHAexistingRDS')]",
+      "type": "Microsoft.Resources/deployments",
+      "apiVersion": "2016-02-01",
+      "dependsOn": [
+        "[resourceId('Microsoft.Resources/deployments/', variables('basicRDSDeploymentName'))]"
+      ],
+      "properties": {
+        "mode": "Incremental",
+        "templateLink": {
+          "uri": "[variables('rdGatewayWebHAURL')]",
+          "contentVersion": "1.0.0.0"
+        },
+        "parameters": {
+          "_artifactsLocation": {
+            "value": "[variables('rdGatewayWebHAexistingRDSLocation')]"
+          },
+          "lbGwName": {
+            "value": "[variables('lbGwName')]"
+          },
+          "lbGwBe": {
+            "value": "[variables('lbGwBe')]"
+          },
+          "adDomainName": {
+            "value": "[parameters('adDomainName')]"
+          },
+          "domainNetbios": {
+            "value": "[parameters('domainNetbios')]"
+          },
+          "adminUsername": {
+            "value": "[parameters('adminUsername')]"
+          },
+          "adminPassword": {
+            "value": "[parameters('adminPassword')]"
+          },
+          "numberOfGwInstances": {
+            "value": "[parameters('numberOfGwInstances')]"
+          },
+          "brokerServer": {
+            "value": "[variables('cbFqdnServerName')]"
+          },
+          "WebURL": {
+            "value": "[variables('gwExternalFqdn')]"
+          },
+          "stDiagName": {
+            "value": "[variables('stDiagName')]"
+          },
+          "vmImageSku": {
+            "value": "[parameters('vmImageSku')]"
+          },
+          "availGwName": {
+            "value": "[variables('availGwName')]"
+          },
+          "vmGwName": {
+            "value": "[variables('vmGwName')]"
+          },
+          "rgName": {
+            "value": "[resourceGroup().name]"
+          },
+          "vnetName": {
+            "value": "[variables('vnetName')]"
+          },
+          "snetName": {
+            "value": "[variables('snetName')]"
           }
         }
       }

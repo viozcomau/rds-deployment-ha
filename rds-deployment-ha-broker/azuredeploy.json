@@ -2,6 +2,13 @@
   "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
   "contentVersion": "1.0.0.0",
   "parameters": {
+    "_artifactsLocation": {
+      "type": "string",
+      "metadata": {
+        "description": "The base URI where artifacts required by this template are located. When the template is deployed using the accompanying scripts, a private location in the subscription will be used and this value will be automatically generated."
+      },
+      "defaultValue": "https://raw.githubusercontent.com/Azure/azure-quickstart-templates/master/rds-deployment-ha-broker/"
+    },
     "clientAccessName": {
       "type": "string",
       "defaultValue": "HARDCB",
@@ -16,17 +23,23 @@
         "description": "The name of the DNS Server to add the DNS entry to for the Connection Broker Names"
       }
     },
-    "existingAdminPassword": {
+    "adminUsername": {
+      "type": "string",
+      "defaultValue": "cloudAdmin",
+      "metadata": {
+        "description": "Name of domain user account with administrative priveledges to manage RDS deployment"
+      }
+    },
+    "adminPassword": {
       "type": "securestring",
       "metadata": {
         "description": "The password of the administrator account"
       }
     },
-    "existingAdminUsername": {
+    "existingDomainName": {
       "type": "string",
-      "defaultValue": "cloudAdmin",
       "metadata": {
-        "description": "Name of domain user account with administrative priveledges to manage RDS deployment"
+        "description": "The domain to join the Connection Broker Machine to"
       }
     },
     "existingBrokerAvailabilitySet": {
@@ -41,12 +54,6 @@
       "defaultValue": "rdcb-01",
       "metadata": {
         "description": "The host name of the existing Connection Broker vm"
-      }
-    },
-    "existingDomainName": {
-      "type": "string",
-      "metadata": {
-        "description": "The domain to join the Connection Broker Machine to"
       }
     },
     "existingSubnetName": {
@@ -86,13 +93,6 @@
         "description": "Windows server version for the second Broker; should be same version as the first broker in the deployment"
       },
       "defaultValue": "2016-Datacenter"
-    },
-    "_artifactsLocation": {
-      "type": "string",
-      "metadata": {
-        "description": "The base URI where artifacts required by this template are located. When the template is deployed using the accompanying scripts, a private location in the subscription will be used and this value will be automatically generated."
-      },
-      "defaultValue": "https://raw.githubusercontent.com/Azure/azure-quickstart-templates/master/rds-deployment-ha-broker/"
     }
   },
   "variables": {
@@ -106,8 +106,8 @@
       "broker": "[concat(' -existingBroker ', parameters('existingBrokerHostname'))]",
       "connstr": "[concat(' -primaryDbConnectionString \"', parameters('primaryDbConnectionString'), '\"')]",
       "domain": "[concat(' -domainName ', parameters('existingDomainName'))]",
-      "user": "[concat(' -username ', parameters('existingAdminUsername'))]",
-      "pwd": "[concat(' -password ', parameters('existingAdminPassword'))]",
+      "user": "[concat(' -username ', parameters('adminUsername'))]",
+      "pwd": "[concat(' -password ', parameters('adminPassword'))]",
       "can": "[concat(' -clientAccessName \"', parameters('clientAccessName'), '\"')]",
       "sqlnclient": "[concat(' -sqlClientUrl \"', variables('sqlClientUrl'), '\"')]",
       "dnsserver": "[concat(' -dnsServer ', parameters('dnsServer'))]",
@@ -132,7 +132,8 @@
       "type": "Microsoft.Network/networkInterfaces",
       "name": "[variables('brokerNicName')]",
       "location": "[resourceGroup().location]",
-      "dependsOn": [],
+      "dependsOn": [
+      ],
       "properties": {
         "ipConfigurations": [
           {
@@ -165,8 +166,8 @@
         },
         "osProfile": {
           "computerName": "[variables('brokerVmName')]",
-          "adminUsername": "[parameters('existingAdminUsername')]",
-          "adminPassword": "[parameters('existingAdminPassword')]"
+          "adminUsername": "[parameters('adminUsername')]",
+          "adminPassword": "[parameters('adminPassword')]"
         },
         "storageProfile": {
           "imageReference": {
@@ -212,14 +213,14 @@
           "properties": {
             "domainName": "[parameters('existingDomainName')]",
             "adminCreds": {
-              "UserName": "[parameters('existingAdminUsername')]",
+              "UserName": "[parameters('adminUsername')]",
               "Password": "PrivateSettingsRef:adminPassword"
             }
           }
         },
         "protectedSettings": {
           "Items": {
-            "adminPassword": "[parameters('existingAdminPassword')]"
+            "adminPassword": "[parameters('adminPassword')]"
           }
         }
       }

@@ -5,12 +5,6 @@
         "_artifactsLocation": {
             "type": "string"
         },
-        "gwdnsLabelPrefix": {
-            "type": "string",
-            "metadata": {
-                "description": "Unique public DNS prefix for the deployment. The fqdn will look something like '<dnsname>.westus.cloudapp.azure.com'. Up to 62 chars, digits or dashes, lowercase, should start with a letter: must conform to '^[a-z][a-z0-9-]{1,61}[a-z0-9]$'."
-            }
-        },
         "lbGwName": {
             "type": "string",
             "metadata": {
@@ -18,7 +12,7 @@
             },
             "defaultValue": "lbGwName"
         },
-        "pipLbGwName": {
+        "lbGwBe": {
             "type": "string"
         },
         "adDomainName": {
@@ -45,7 +39,7 @@
                 "description": "The password for the administrator account of the new VM and the domain"
             }
         },
-        "numberOfWebGwInstances": {
+        "numberOfGwInstances": {
             "type": "int",
             "defaultValue": 2,
             "metadata": {
@@ -58,16 +52,16 @@
                 "description": "FQDN for Broker Server"
             }
         },
-        "vmGwName": {
-            "type": "string"
-        },
         "WebURL": {
             "type": "string",
             "metadata": {
                 "description": "This is RD Gateway external FQDN. This shall be picked from existing basic RDS deploment."
             }
         },
-        "imageSKU": {
+        "stDiagName": {
+            "type": "string"
+        },
+        "vmImageSku": {
             "type": "string",
             "allowedValues": [
                 "2012-R2-Datacenter",
@@ -85,6 +79,18 @@
                 "description": "Size for the new RD Gateway VMs"
             }
         },
+        "availGwName": {
+            "type": "string"
+        },
+        "vmGwName": {
+            "type": "string"
+        },
+        "rgName": {
+            "type": "string",
+            "metadata": {
+                "description": "The name of the resourceGroup for the vnet"
+            }
+        },
         "vnetName": {
             "type": "string",
             "metadata": {
@@ -95,12 +101,6 @@
             "type": "string",
             "metadata": {
                 "description": "The subnet name of AD domain. For example johnsubnet1"
-            }
-        },
-        "rgName": {
-            "type": "string",
-            "metadata": {
-                "description": "The name of the resourceGroup for the vnet"
             }
         },
         "location": {
@@ -115,161 +115,20 @@
         "imagePublisher": "MicrosoftWindowsServer",
         "imageOffer": "WindowsServer",
         "subnet-id": "[resourceId(parameters('rgName'), 'Microsoft.Network/virtualNetworks/subnets', parameters('vnetName'), parameters('snetName'))]",
-
-        "availGwName": "avail-gw",
-        "pipLbGwName": "pip-lb-gw",
-
-
-        "availabilitySetPlatformFaultDomainCount": "2",
-        "availabilitySetPlatformUpdateDomainCount": "5",
-
         "lbGwId": "[resourceId('Microsoft.Network/loadBalancers',parameters('lbGwName'))]",
-        "lbGwFe": "[concat(parameters('lbGwName'),'-fe')]",
-        "lbGwBe": "[concat(parameters('lbGwName'),'-be')]",
-        "lbGwFeConfigId": "[concat(variables('lbGwId'),'/frontendIPConfigurations/',variables('lbGwFe'))]",
-        "lbGwBeAddressPoolId": "[concat(variables('lbGwId'),'/backendAddressPools/',variables('lbGwBe'))]",
-
-        "pipLbGwId": "[resourceId('Microsoft.Network/publicIPAddresses',parameters('pipLbGwName'))]",
+        "lbGwBeAddressPoolId": "[concat(variables('lbGwId'),'/backendAddressPools/',parameters('lbGwBe'))]",
         "nicPrefix": "nic-",
-
-        "assetLocation": "https://raw.githubusercontent.com/Azure/azure-quickstart-templates/master/rds-deployment"
+        "assetLocation": "[parameters('_artifactsLocation')]"
     },
     "resources": [
         {
-            "apiVersion": "2017-03-30",
-            "type": "Microsoft.Compute/availabilitySets",
-            "name": "[variables('availGwName')]",
-            "location": "[parameters('location')]",
-            "properties": {
-                "platformFaultDomainCount": "[variables('availabilitySetPlatformFaultDomainCount')]",
-                "platformUpdateDomainCount": "[variables('availabilitySetPlatformUpdateDomainCount')]"
-            },
-            "sku": {
-                "name": "Aligned"
-            }
-        },
-        {
-            "apiVersion": "2015-06-15",
-            "type": "Microsoft.Network/publicIPAddresses",
-            "name": "[variables('pipLbGwName')]",
-            "location": "[parameters('location')]",
-            "properties": {
-                "publicIPAllocationMethod": "Dynamic",
-                "dnsSettings": {
-                    "domainNameLabel": "[parameters('gwdnsLabelPrefix')]"
-                }
-            }
-        },
-        {
-            "name": "[parameters('lbGwName')]",
-            "type": "Microsoft.Network/loadBalancers",
-            "apiVersion": "2015-06-15",
-            "location": "[parameters('location')]",
-            "dependsOn": [
-                "[variables('pipLbGwId')]"
-            ],
-            "properties": {
-                "frontendIPConfigurations": [
-                    {
-                        "name": "[variables('lbGwFe')]",
-                        "properties": {
-                            "publicIPAddress": {
-                                "id": "[variables('pipLbGwId')]"
-                            }
-                        }
-                    }
-                ],
-                "backendAddressPools": [
-                    {
-                        "name": "[variables('lbGwBe')]"
-                    }
-                ],
-                "loadBalancingRules": [
-                    {
-                        "name": "LBRule01",
-                        "properties": {
-                            "frontendIPConfiguration": {
-                                "id": "[variables('lbGwFeConfigId')]"
-                            },
-                            "backendAddressPool": {
-                                "id": "[variables('lbGwBeAddressPoolId')]"
-                            },
-                            "protocol": "Tcp",
-                            "frontendPort": 443,
-                            "backendPort": 443,
-                            "enableFloatingIP": false,
-                            "idleTimeoutInMinutes": 5,
-                            "loadDistribution": "SourceIPProtocol",
-                            "probe": {
-                                "id": "[concat(variables('lbGwId'),'/probes/tcpProbe01')]"
-                            }
-                        }
-                    },
-                    {
-                        "name": "LBRule02",
-                        "properties": {
-                            "frontendIPConfiguration": {
-                                "id": "[variables('lbGwFeConfigId')]"
-                            },
-                            "backendAddressPool": {
-                                "id": "[variables('lbGwBeAddressPoolId')]"
-                            },
-                            "protocol": "Udp",
-                            "frontendPort": 3391,
-                            "backendPort": 3391,
-                            "enableFloatingIP": false,
-                            "idleTimeoutInMinutes": 5,
-                            "loadDistribution": "SourceIPProtocol",
-                            "probe": {
-                                "id": "[concat(variables('lbGwId'),'/probes/tcpProbe02')]"
-                            }
-                        }
-                    }
-                ],
-                "probes": [
-                    {
-                        "name": "tcpProbe01",
-                        "properties": {
-                            "protocol": "Tcp",
-                            "port": 443,
-                            "intervalInSeconds": 5,
-                            "numberOfProbes": 2
-                        }
-                    },
-                    {
-                        "name": "tcpProbe02",
-                        "properties": {
-                            "protocol": "Tcp",
-                            "port": 3391,
-                            "intervalInSeconds": 5,
-                            "numberOfProbes": 2
-                        }
-                    }
-                ],
-                "inboundNatRules": [
-                    {
-                        "name": "rdp",
-                        "properties": {
-                            "frontendIPConfiguration": {
-                                "id": "[variables('lbGwFeConfigId')]"
-                            },
-                            "protocol": "Tcp",
-                            "frontendPort": 3389,
-                            "backendPort": 3389,
-                            "enableFloatingIP": false
-                        }
-                    }
-                ]
-            }
-        },
-        {
-            "name": "[concat(variables('nicPrefix'),'gw-',copyindex(1))]",
+            "name": "[concat(variables('nicPrefix'),parameters('vmGwName'),copyindex(2))]",
             "type": "Microsoft.Network/networkInterfaces",
             "location": "[parameters('location')]",
             "apiVersion": "2017-06-01",
             "copy": {
                 "name": "gw-nic-loop",
-                "count": "[parameters('numberOfWebGwInstances')]"
+                "count": "[parameters('numberOfGwInstances')]"
             },
             "dependsOn": [
                 "[variables('lbGwId')]"
@@ -302,10 +161,10 @@
             "apiVersion": "2017-03-30",
             "copy": {
                 "name": "gw-vm-loop",
-                "count": "[parameters('numberOfWebGwInstances')]"
+                "count": "[parameters('numberOfGwInstances')]"
             },
             "dependsOn": [
-                "[resourceId('Microsoft.Compute/availabilitySets', variables('availGwName'))]",
+                "[resourceId('Microsoft.Compute/availabilitySets', parameters('availGwName'))]",
                 "[concat('Microsoft.Network/networkInterfaces/',variables('nicPrefix'),'gw-', copyindex(1))]"
             ],
             "properties": {
@@ -313,7 +172,7 @@
                     "vmSize": "[parameters('vmSize')]"
                 },
                 "availabilitySet": {
-                    "id": "[resourceId('Microsoft.Compute/availabilitySets', variables('availGwName'))]"
+                    "id": "[resourceId('Microsoft.Compute/availabilitySets', parameters('availGwName'))]"
                 },
                 "osProfile": {
                     "computerName": "[concat(parameters('vmGwName'),copyindex(1))]",
@@ -324,7 +183,7 @@
                     "imageReference": {
                         "publisher": "[variables('imagePublisher')]",
                         "offer": "[variables('imageOffer')]",
-                        "sku": "[parameters('imageSKU')]",
+                        "sku": "[parameters('vmImageSku')]",
                         "version": "latest"
                     },
                     "osDisk": {
@@ -399,7 +258,7 @@
                             "Items": {
                                 "AdminPassword": "[parameters('adminPassword')]"
                             },
-                            "commandToExecute": "[Concat('powershell.exe -ExecutionPolicy Unrestricted -File', ' ', 'WebAndGwFarmAdd_PostConfig1.1.ps1',' ','-username \"',parameters('adminusername'),'\" ', '-password \"',parameters('adminpassword'),'\" ','-BrokerServer \"',parameters('BrokerServer'),'\" ','-WebURL \"',parameters('WebURL'),'\" ','-Domainname \"',parameters('adDomainName'),'\" ','-DomainNetbios \"',parameters('DomainNetbios'),'\" ','-numberofwebServers ',parameters('numberOfWebGwInstances'))]"
+                            "commandToExecute": "[Concat('powershell.exe -ExecutionPolicy Unrestricted -File', ' ', 'WebAndGwFarmAdd_PostConfig1.1.ps1',' ','-username \"',parameters('adminusername'),'\" ', '-password \"',parameters('adminpassword'),'\" ','-BrokerServer \"',parameters('BrokerServer'),'\" ','-WebURL \"',parameters('WebURL'),'\" ','-Domainname \"',parameters('adDomainName'),'\" ','-DomainNetbios \"',parameters('DomainNetbios'),'\" ','-numberofwebServers ',parameters('numberOfGwInstances'))]"
                         }
                     }
                 }
