@@ -115,8 +115,9 @@
         "imagePublisher": "MicrosoftWindowsServer",
         "imageOffer": "WindowsServer",
         "subnet-id": "[resourceId(parameters('rgName'), 'Microsoft.Network/virtualNetworks/subnets', parameters('vnetName'), parameters('snetName'))]",
-        "lbGwId": "[concat(subscription().id, '/resourceGroups/',resourceGroup().name,'/providers/Microsoft.Network/loadBalancers/',parameters('lbGwName'))]",
+        "lbGwId": "[resourceId(parameters('rgName'),'/Microsoft.Network/loadBalancers/',parameters('lbGwName'))]",
         "lbGwBeAddressPoolId": "[concat(variables('lbGwId'),'/backendAddressPools/',parameters('lbGwBe'))]",
+        "availGwId": "[resourceId(parameters('rgName'),'/Microsoft.Compute/availabilitySets',parameters('availGwName'))]",
         "nicPrefix": "nic-",
         "assetLocation": "[parameters('_artifactsLocation')]"
     },
@@ -130,9 +131,6 @@
                 "name": "gw-nic-loop",
                 "count": "[parameters('numberOfGwInstances')]"
             },
-            "dependsOn": [
-                "[variables('lbGwId')]"
-            ],
             "properties": {
                 "ipConfigurations": [
                     {
@@ -171,7 +169,7 @@
                     "vmSize": "[parameters('vmSize')]"
                 },
                 "availabilitySet": {
-                    "id": "[resourceId('Microsoft.Compute/availabilitySets', parameters('availGwName'))]"
+                    "id": "[variables('availGwId')]"
                 },
                 "osProfile": {
                     "computerName": "[concat('gw-vm-',copyindex(2))]",
