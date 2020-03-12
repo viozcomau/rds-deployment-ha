@@ -7,7 +7,7 @@
       "metadata": {
         "description": "Project name will be suffixed and tagged to resources"
       },
-      "defaultValue": ""
+      "defaultValue": "test"
     },
     "gwdnsLabelPrefix": {
       "type": "string",

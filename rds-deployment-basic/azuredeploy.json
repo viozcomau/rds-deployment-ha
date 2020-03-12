@@ -550,16 +550,16 @@
           "contentVersion": "1.0.0.0"
         },
         "parameters": {
-          "virtualNetworkName": {
+          "vnetName": {
             "value": "[parameters('vnetName')]"
           },
-          "virtualNetworkAddressRange": {
+          "vnetAddressRange": {
             "value": "[variables('vnetAddressRange')]"
           },
           "snetName": {
             "value": "[parameters('snetName')]"
           },
-          "subnetRange": {
+          "snetRange": {
             "value": "[variables('snetAddressRange')]"
           },
           "dnsServerAddress": {
