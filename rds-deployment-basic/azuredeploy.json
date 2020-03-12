@@ -29,7 +29,7 @@
       },
       "defaultValue": "vnet"
     },
-    "subnetName": {
+    "snetName": {
       "type": "string",
       "metadata": {
         "description": "The existing subnet name of AD domain. For example 'subnet' or 'contososubnet'"
@@ -175,7 +175,7 @@
     "vnetAddressRange": "10.21.0.0/16",
     "snetAddressRange": "10.21.0.0/24",
     "dnsServerPrivateIp": "10.21.0.4",
-    "snetId": "[concat(resourceId('Microsoft.Network/virtualNetworks', parameters('vnetName')),'/subnets/', parameters('subnetName'))]",
+    "snetId": "[concat(resourceId('Microsoft.Network/virtualNetworks', parameters('vnetName')),'/subnets/', parameters('snetName'))]",
 
     "nsgName": "nsg-rds",
     "availabilitySetPlatformFaultDomainCount": "2",
@@ -228,7 +228,7 @@
         },
         "subnets": [
           {
-            "name": "[parameters('subnetName')]",
+            "name": "[parameters('snetName')]",
             "properties": {
               "addressPrefix": "[variables('snetAddressRange')]",
               "networkSecurityGroup": {
@@ -556,8 +556,8 @@
           "virtualNetworkAddressRange": {
             "value": "[variables('vnetAddressRange')]"
           },
-          "subnetName": {
-            "value": "[parameters('subnetName')]"
+          "snetName": {
+            "value": "[parameters('snetName')]"
           },
           "subnetRange": {
             "value": "[variables('snetAddressRange')]"

@@ -108,7 +108,7 @@
     "gwName": "gw-1",
     "cbName": "cb-1",
     "vnetName": "[concat(variables('vnetPrefix'),parameters('projectName'))]",
-    "subnetName": "[concat(variables('subnetName'),parameters('projectName'))]",
+    "snetName": "[concat(variables('snetPrefix'),parameters('projectName'))]",
     "loadBalancer": "[concat(variables('lbPrefix'),'gw')]",
     "gatewaypublicIp": "[concat(variables('pipPrefix'),'gw')]",
     "backEndAddressPool": "LBBAP",
@@ -150,8 +150,8 @@
           "vnetName": {
             "value": "[variables('vnetName')]"
           },
-          "subnetName": {
-            "value": "[variables('subnetName')]"
+          "snetName": {
+            "value": "[variables('snetName')]"
           },
           "adminUsername": {
             "value": "[parameters('adminUserName')]"
