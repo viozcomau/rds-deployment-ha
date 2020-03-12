@@ -74,7 +74,7 @@
         },
         "vmGwSize": {
             "type": "string",
-            "defaultValue": "Standard_A2",
+            "defaultValue": "Standard_A2_v2",
             "metadata": {
                 "description": "Size for the new RD Gateway VMs"
             }
