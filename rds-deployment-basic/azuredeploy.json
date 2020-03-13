@@ -644,7 +644,7 @@
     {
       "apiVersion": "2015-06-15",
       "type": "Microsoft.Network/networkInterfaces",
-      "name": "[concat(variables('nicShName'), copyindex(1))]",
+      "name": "[concat(variables('nicShName'), copyindex())]",
       "location": "[parameters('location')]",
       "copy": {
         "name": "nic-loop-rdsh",
@@ -762,7 +762,7 @@
     {
       "apiVersion": "2018-10-01",
       "type": "Microsoft.Compute/virtualMachines",
-      "name": "[concat(parameters('vmShName'), copyindex(1))]",
+      "name": "[concat(parameters('vmShName'), copyindex())]",
       "location": "[parameters('location')]",
       "copy": {
         "name": "rdsh-vm-loop",
@@ -771,7 +771,7 @@
       "dependsOn": [
         "[variables('deployPrimaryAdID')]",
         "[concat('Microsoft.Storage/storageAccounts/', parameters('stDiagName'))]",
-        "[concat('Microsoft.Network/networkInterfaces/', variables('nicShName'), copyindex(1))]"
+        "[concat('Microsoft.Network/networkInterfaces/', variables('nicShName'), copyindex())]"
       ],
       "properties": {
         "hardwareProfile": {
@@ -781,7 +781,7 @@
           "id": "[resourceId('Microsoft.Compute/availabilitySets', variables('availShName'))]"
         },
         "osProfile": {
-          "computerName": "[concat(parameters('vmShName'),copyindex(1))]",
+          "computerName": "[concat(parameters('vmShName'),copyindex())]",
           "adminUsername": "[parameters('adminUsername')]",
           "adminPassword": "[parameters('adminPassword')]"
         },
@@ -793,7 +793,7 @@
             "version": "latest"
           },
           "osDisk": {
-            "name": "[concat(parameters('vmShName'),copyindex(1),'-osdisk')]",
+            "name": "[concat(parameters('vmShName'),copyindex(),'-osdisk')]",
             "createOption": "FromImage",
             "managedDisk": {
               "storageAccountType": "Standard_LRS"
@@ -804,7 +804,7 @@
         "networkProfile": {
           "networkInterfaces": [
             {
-              "id": "[resourceId('Microsoft.Network/networkInterfaces',concat(variables('nicShName'), copyindex(1)))]"
+              "id": "[resourceId('Microsoft.Network/networkInterfaces',concat(variables('nicShName'), copyindex()))]"
             }
           ]
         },
@@ -819,10 +819,10 @@
         {
           "apiVersion": "2018-10-01",
           "type": "Microsoft.Compute/virtualMachines/extensions",
-          "name": "[concat(parameters('vmShName'), copyindex(1),'/sessionhost')]",
+          "name": "[concat(parameters('vmShName'), copyindex(),'/sessionhost')]",
           "location": "[parameters('location')]",
           "dependsOn": [
-            "[resourceId('Microsoft.Compute/virtualMachines', concat(parameters('vmShName'), copyindex(1)))]"
+            "[resourceId('Microsoft.Compute/virtualMachines', concat(parameters('vmShName'), copyindex()))]"
           ],
           "properties": {
             "publisher": "Microsoft.Powershell",

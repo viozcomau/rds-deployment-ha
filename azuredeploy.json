@@ -213,9 +213,9 @@
 
     "stDiagName": "[tolower(concat('stdiag',uniqueString(resourceGroup().id)))]",
 
-    "vmAdName": "[concat(variables('vmPrefix'), variables('adName'),'1')]",
-    "vmGwName": "[concat(variables('vmPrefix'), variables('gwName'),'1')]",
-    "vmCbName": "[concat(variables('vmPrefix'), variables('cbName'),'1')]",
+    "vmAdName": "[concat(variables('vmPrefix'), variables('adName'),'0')]",
+    "vmGwName": "[concat(variables('vmPrefix'), variables('gwName'),'0')]",
+    "vmCbName": "[concat(variables('vmPrefix'), variables('cbName'),'0')]",
     "vmShName": "[concat(variables('vmPrefix'), variables('shName'))]",
 
     "adFqdnServerName": "[concat(variables('vmAdName'), '.', parameters('adDomainName'))]",
