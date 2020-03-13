@@ -868,7 +868,7 @@
           "id": "[resourceId('Microsoft.Compute/availabilitySets', parameters('availCbName'))]"
         },
         "osProfile": {
-          "computerName": "broker",
+          "computerName": "[parameters('vmCbName')]",
           "adminUsername": "[parameters('adminUsername')]",
           "adminPassword": "[parameters('adminPassword')]"
         },
@@ -929,12 +929,12 @@
               "UserName": "[parameters('adminUsername')]",
               "Password": "PrivateSettingsRef:adminPassword"
             },
-            "connectionBroker": "[concat('broker.',parameters('adDomainName'))]",
+            "connectionBroker": "[concat(parameters('vmCbName'),'.',parameters('adDomainName'))]",
             "domainName": "[parameters('adDomainName')]",
             "externalfqdn": "[reference(parameters('pipLbGwName')).dnsSettings.fqdn]",
-            "numberOfShInstances": "[parameters('numberOfShInstances')]",
-            "sessionHostNamingPrefix": "rdsh-",
-            "webAccessServer": "[concat('gateway.',parameters('adDomainName'))]"
+            "numberOfRdshInstances": "[parameters('numberOfShInstances')]",
+            "sessionHostNamingPrefix": "[parameters('vmShName')]",
+            "webAccessServer": "[concat(parameters('vmGwName'),'.',parameters('adDomainName'))]"
           }
         },
         "type": "DSC",

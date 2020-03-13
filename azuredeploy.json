@@ -194,10 +194,10 @@
     "pipPrefix": "pip-",
     "availPrefix": "avail-",
 
-    "adName": "ad",
-    "gwName": "gw",
-    "cbName": "cb",
-    "shName": "sh",
+    "adName": "ad-",
+    "gwName": "gw-",
+    "cbName": "cb-",
+    "shName": "sh-",
 
     "vnetName": "[concat(variables('vnetPrefix'),parameters('projectName'))]",
     "snetName": "[concat(variables('snetPrefix'),parameters('projectName'))]",
@@ -213,10 +213,10 @@
 
     "stDiagName": "[tolower(concat('stdiag',uniqueString(resourceGroup().id)))]",
 
-    "vmAdName": "[concat(variables('vmPrefix'), variables('adName'),'-1')]",
-    "vmGwName": "[concat(variables('vmPrefix'), variables('gwName'),'-1')]",
-    "vmCbName": "[concat(variables('vmPrefix'), variables('cbName'),'-1')]",
-    "vmShName": "[concat(variables('vmPrefix'), variables('shName'),'-')]",
+    "vmAdName": "[concat(variables('vmPrefix'), variables('adName'),'1')]",
+    "vmGwName": "[concat(variables('vmPrefix'), variables('gwName'),'1')]",
+    "vmCbName": "[concat(variables('vmPrefix'), variables('cbName'),'1')]",
+    "vmShName": "[concat(variables('vmPrefix'), variables('shName'))]",
 
     "adFqdnServerName": "[concat(variables('vmAdName'), '.', parameters('adDomainName'))]",
     "gwExternalFqdn": "[concat(variables('vmGwName'), '.', parameters('adDomainName'))]",
