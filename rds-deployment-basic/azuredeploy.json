@@ -691,7 +691,7 @@
           "id": "[resourceId('Microsoft.Compute/availabilitySets', parameters('availGwName'))]"
         },
         "osProfile": {
-          "computerName": "gateway",
+          "computerName": "[parameters('vmGwName')]",
           "adminUsername": "[parameters('adminUsername')]",
           "adminPassword": "[parameters('adminPassword')]"
         },
@@ -781,7 +781,7 @@
           "id": "[resourceId('Microsoft.Compute/availabilitySets', variables('availShName'))]"
         },
         "osProfile": {
-          "computerName": "[concat(parameters('vmShName'),copyindex(1),'-osdisk')]",
+          "computerName": "[concat(parameters('vmShName'),copyindex(1))]",
           "adminUsername": "[parameters('adminUsername')]",
           "adminPassword": "[parameters('adminPassword')]"
         },
@@ -793,7 +793,7 @@
             "version": "latest"
           },
           "osDisk": {
-            "name": "[concat('rdsh-',copyindex(1))]",
+            "name": "[concat(parameters('vmShName'),copyindex(1),'-osdisk')]",
             "createOption": "FromImage",
             "managedDisk": {
               "storageAccountType": "Standard_LRS"
