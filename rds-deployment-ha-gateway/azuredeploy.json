@@ -241,11 +241,11 @@
                 {
                     "apiVersion": "2015-06-15",
                     "type": "Microsoft.Compute/virtualMachines/extensions",
-                    "name": "[concat('gw-vm-',copyindex(1),'/WebAndGwFarmAdd_PostConfig1.1')]",
+                    "name": "[concat(parameters('vmGwName'),copyindex(1),'/WebAndGwFarmAdd_PostConfig1.1')]",
                     "location": "[parameters('location')]",
                     "dependsOn": [
-                        "[resourceId('Microsoft.Compute/virtualMachines', Concat('gw-vm-',copyindex(1)))]",
-                        "[concat('Microsoft.Compute/virtualMachines/','gw-vm-',copyindex(1),'/extensions/','Gateway')]"
+                        "[resourceId('Microsoft.Compute/virtualMachines', Concat(parameters('vmGwName'),copyindex(1)))]",
+                        "[concat('Microsoft.Compute/virtualMachines/',parameters('vmGwName'),copyindex(1),'/extensions/','gateway')]"
                     ],
                     "properties": {
                         "publisher": "Microsoft.Compute",
