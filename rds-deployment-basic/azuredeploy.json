@@ -906,7 +906,7 @@
     {
       "type": "Microsoft.Compute/virtualMachines/extensions",
       "name": "[concat(parameters('vmCbName'), '/rdsdeployment')]",
-      "apiVersion": "2018-10-01",
+      "apiVersion": "2015-06-15",
       "location": "[parameters('location')]",
       "dependsOn": [
         "[resourceId('Microsoft.Compute/virtualMachines', parameters('vmCbName'))]",
@@ -916,7 +916,7 @@
       "properties": {
         "type": "DSC",
         "publisher": "Microsoft.Powershell",
-        "typeHandlerVersion": "2.21",
+        "typeHandlerVersion": "2.11",
         "autoUpgradeMinorVersion": true,
         "protectedSettings": {
           "Items": {
