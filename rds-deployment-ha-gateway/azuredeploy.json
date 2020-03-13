@@ -123,7 +123,7 @@
     },
     "resources": [
         {
-            "name": "[concat(variables('nicPrefix'),'gw-vm-',copyindex(2))]",
+            "name": "[concat(variables('nicPrefix'),'gw-vm-',copyindex(1))]",
             "type": "Microsoft.Network/networkInterfaces",
             "location": "[parameters('location')]",
             "apiVersion": "2017-06-01",
@@ -153,7 +153,7 @@
             }
         },
         {
-            "name": "[concat('gw-vm-',copyindex(2))]",
+            "name": "[concat('gw-vm-',copyindex(1))]",
             "type": "Microsoft.Compute/virtualMachines",
             "location": "[parameters('location')]",
             "apiVersion": "2017-03-30",
@@ -162,7 +162,7 @@
                 "count": "[parameters('numberOfGwInstances')]"
             },
             "dependsOn": [
-                "[concat('Microsoft.Network/networkInterfaces/',variables('nicPrefix'),'gw-vm-', copyindex(2))]"
+                "[concat('Microsoft.Network/networkInterfaces/',variables('nicPrefix'),'gw-vm-', copyindex(1))]"
             ],
             "properties": {
                 "hardwareProfile": {
@@ -172,7 +172,7 @@
                     "id": "[variables('availGwId')]"
                 },
                 "osProfile": {
-                    "computerName": "[concat('gw-vm-',copyindex(2))]",
+                    "computerName": "[concat('gw-vm-',copyindex(1))]",
                     "adminUserName": "[parameters('adminUserName')]",
                     "adminPassword": "[parameters('adminPassword')]"
                 },
@@ -184,7 +184,7 @@
                         "version": "latest"
                     },
                     "osDisk": {
-                        "name": "[concat('gw-vm-',copyindex(2),'-osDisk')]",
+                        "name": "[concat('gw-vm-',copyindex(1),'-osDisk')]",
                         "caching": "ReadWrite",
                         "createOption": "FromImage",
                         "managedDisk": {
@@ -195,19 +195,19 @@
                 "networkProfile": {
                     "networkInterfaces": [
                         {
-                            "id": "[resourceId('Microsoft.Network/networkInterfaces',concat(variables('nicPrefix'),'gw-vm-',copyindex(2)))]"
+                            "id": "[resourceId('Microsoft.Network/networkInterfaces',concat(variables('nicPrefix'),'gw-vm-',copyindex(1)))]"
                         }
                     ]
                 }
             },
             "resources": [
                 {
-                    "name": "[concat('gw-vm-',copyindex(2),'/Gateway')]",
+                    "name": "[concat('gw-vm-',copyindex(1),'/Gateway')]",
                     "type": "Microsoft.Compute/virtualMachines/extensions",
                     "location": "[parameters('location')]",
                     "apiVersion": "2017-12-01",
                     "dependsOn": [
-                        "[resourceId('Microsoft.Compute/virtualMachines', Concat('gw-vm-',copyindex(2)))]"
+                        "[resourceId('Microsoft.Compute/virtualMachines', Concat('gw-vm-',copyindex(1)))]"
                     ],
                     "properties": {
                         "publisher": "Microsoft.Powershell",
@@ -235,11 +235,11 @@
                 {
                     "apiVersion": "2015-06-15",
                     "type": "Microsoft.Compute/virtualMachines/extensions",
-                    "name": "[concat('gw-vm-',copyindex(2),'/WebAndGwFarmAdd_PostConfig1.1')]",
+                    "name": "[concat('gw-vm-',copyindex(1),'/WebAndGwFarmAdd_PostConfig1.1')]",
                     "location": "[parameters('location')]",
                     "dependsOn": [
-                        "[resourceId('Microsoft.Compute/virtualMachines', Concat('gw-vm-',copyindex(2)))]",
-                        "[concat('Microsoft.Compute/virtualMachines/','gw-vm-',copyindex(2),'/extensions/','Gateway')]"
+                        "[resourceId('Microsoft.Compute/virtualMachines', Concat('gw-vm-',copyindex(1)))]",
+                        "[concat('Microsoft.Compute/virtualMachines/','gw-vm-',copyindex(1),'/extensions/','Gateway')]"
                     ],
                     "properties": {
                         "publisher": "Microsoft.Compute",
