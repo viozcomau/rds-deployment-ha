@@ -914,13 +914,15 @@
         "rdsh-vm-loop"
       ],
       "properties": {
+        "type": "DSC",
+        "publisher": "Microsoft.Powershell",
+        "typeHandlerVersion": "2.21",
         "autoUpgradeMinorVersion": true,
         "protectedSettings": {
           "Items": {
             "adminPassword": "[parameters('adminPassword')]"
           }
         },
-        "publisher": "Microsoft.Powershell",
         "settings": {
           "modulesUrl": "[concat(variables('assetLocation'),'/Configuration.zip')]",
           "configurationFunction": "Configuration.ps1\\RDSDeployment",
@@ -936,10 +938,18 @@
             "sessionHostNamingPrefix": "[parameters('vmShName')]",
             "webAccessServer": "[concat(parameters('vmGwName'),'.',parameters('adDomainName'))]"
           }
-        },
-        "type": "DSC",
-        "typeHandlerVersion": "2.11"
+        }
       }
     }
-  ]
+  ],
+  "outputs": {
+    "fqdn": {
+      "type": "string",
+      "value": "[reference(parameters('pipLbGwName')).dnsSettings.fqdn]"
+    },
+    "rdWebUrl": {
+      "type": "string",
+      "value": "[concat('https://', reference(parameters('pipLbGwName')).dnsSettings.fqdn, '/rdweb')]"
+    }
+  }
 }
