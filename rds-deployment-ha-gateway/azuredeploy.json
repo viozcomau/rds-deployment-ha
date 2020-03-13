@@ -123,7 +123,7 @@
     },
     "resources": [
         {
-            "name": "[concat(variables('nicPrefix'),'gw-vm-',copyindex(1))]",
+            "name": "[concat(variables('nicPrefix'),parameters('vmGwName'),copyindex(1))]",
             "type": "Microsoft.Network/networkInterfaces",
             "location": "[parameters('location')]",
             "apiVersion": "2017-06-01",
@@ -153,16 +153,16 @@
             }
         },
         {
-            "name": "[concat('gw-vm-',copyindex(1))]",
+            "name": "[concat(parameters('vmGwName'),copyindex(1))]",
             "type": "Microsoft.Compute/virtualMachines",
             "location": "[parameters('location')]",
-            "apiVersion": "2017-03-30",
+            "apiVersion": "2018-10-01",
             "copy": {
                 "name": "gw-vm-loop",
                 "count": "[parameters('numberOfGwInstances')]"
             },
             "dependsOn": [
-                "[concat('Microsoft.Network/networkInterfaces/',variables('nicPrefix'),'gw-vm-', copyindex(1))]"
+                "[concat('Microsoft.Network/networkInterfaces/',variables('nicPrefix'),parameters('vmGwName'), copyindex(1))]"
             ],
             "properties": {
                 "hardwareProfile": {
@@ -172,7 +172,7 @@
                     "id": "[variables('availGwId')]"
                 },
                 "osProfile": {
-                    "computerName": "[concat('gw-vm-',copyindex(1))]",
+                    "computerName": "[concat(parameters('vmGwName'),copyindex(1))]",
                     "adminUserName": "[parameters('adminUserName')]",
                     "adminPassword": "[parameters('adminPassword')]"
                 },
@@ -184,7 +184,7 @@
                         "version": "latest"
                     },
                     "osDisk": {
-                        "name": "[concat('gw-vm-',copyindex(1),'-osDisk')]",
+                        "name": "[concat(parameters('vmGwName'),copyindex(1),'-osdisk')]",
                         "caching": "ReadWrite",
                         "createOption": "FromImage",
                         "managedDisk": {
@@ -195,19 +195,25 @@
                 "networkProfile": {
                     "networkInterfaces": [
                         {
-                            "id": "[resourceId('Microsoft.Network/networkInterfaces',concat(variables('nicPrefix'),'gw-vm-',copyindex(1)))]"
+                            "id": "[resourceId('Microsoft.Network/networkInterfaces',concat(variables('nicPrefix'),parameters('vmGwName'),copyindex(1)))]"
                         }
                     ]
+                },
+                "diagnosticsProfile": {
+                    "bootDiagnostics": {
+                        "enabled": true,
+                        "storageUri": "[concat('http://', parameters('stDiagName'), '.blob.core.windows.net')]"
+                    }
                 }
             },
             "resources": [
                 {
-                    "name": "[concat('gw-vm-',copyindex(1),'/Gateway')]",
+                    "name": "[concat(parameters('vmGwName'),copyindex(1),'/gateway')]",
                     "type": "Microsoft.Compute/virtualMachines/extensions",
                     "location": "[parameters('location')]",
                     "apiVersion": "2017-12-01",
                     "dependsOn": [
-                        "[resourceId('Microsoft.Compute/virtualMachines', Concat('gw-vm-',copyindex(1)))]"
+                        "[resourceId('Microsoft.Compute/virtualMachines', Concat(parameters('vmGwName'),copyindex(1)))]"
                     ],
                     "properties": {
                         "publisher": "Microsoft.Powershell",

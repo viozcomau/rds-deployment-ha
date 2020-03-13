@@ -47,7 +47,7 @@
     "vmAdSize": {
       "type": "string",
       "metadata": {
-        "description": "The size of the RDSH VMs"
+        "description": "The size of the AD VMs"
       },
       "allowedValues": [
         "Standard_A1_v2",
@@ -63,12 +63,12 @@
         "Standard_D4_v2",
         "Standard_D5_v2"
       ],
-      "defaultValue": "Standard_A2_v2"
+      "defaultValue": "Standard_A4_v2"
     },
     "vmGwSize": {
       "type": "string",
       "metadata": {
-        "description": "The size of the RDSH VMs"
+        "description": "The size of the GW VMs"
       },
       "allowedValues": [
         "Standard_A1_v2",
@@ -213,9 +213,9 @@
 
     "stDiagName": "[tolower(concat('stdiag',uniqueString(resourceGroup().id)))]",
 
-    "vmAdName": "[concat(variables('vmPrefix'), variables('adName'),'0')]",
-    "vmGwName": "[concat(variables('vmPrefix'), variables('gwName'),'0')]",
-    "vmCbName": "[concat(variables('vmPrefix'), variables('cbName'),'0')]",
+    "vmAdName": "[concat(variables('vmPrefix'), variables('adName'))]",
+    "vmGwName": "[concat(variables('vmPrefix'), variables('gwName'))]",
+    "vmCbName": "[concat(variables('vmPrefix'), variables('cbName'))]",
     "vmShName": "[concat(variables('vmPrefix'), variables('shName'))]",
 
     "adFqdnServerName": "[concat(variables('vmAdName'), '.', parameters('adDomainName'))]",

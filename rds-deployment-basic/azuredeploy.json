@@ -143,6 +143,9 @@
     "assetLocation": "[concat(parameters('_artifactsLocation'),'/','rds-deployment')]",
     "pipPrefix": "pip-",
     "nicPrefix": "nic-",
+    "vmAdName": "[concat(parameters('vmAdName'),'0')]",
+    "vmGwName": "[concat(parameters('vmGwName'),'0')]",
+    "vmCbName": "[concat(parameters('vmCbName'),'0')]",
 
     "adTemplateURL": "[concat(variables('assetLocation'),'/adVmTemplate.json')]",
     "adVmDeployment": "CreateAdVms",
@@ -153,7 +156,7 @@
     "vnetwithDNSTemplateURL": "[concat(variables('assetLocation'),'/vnet-with-dns-server.json')]",
     "updateVNetDNS1": "updateVNetDNS",
 
-    "pipLbAdName": "[concat(variables('pipPrefix'),parameters('vmAdName'))]",
+    "pipLbAdName": "[concat(variables('pipPrefix'),variables('vmAdName'))]",
     "pipLbAdId": "[resourceId('Microsoft.Network/publicIPAddresses',variables('pipLbAdName'))]",
     "pipLbGwId": "[resourceId('Microsoft.Network/publicIPAddresses',parameters('pipLbGwName'))]",
 
@@ -171,7 +174,7 @@
     "lbGwFeConfigId": "[concat(variables('lbGwId'),'/frontendIPConfigurations/',variables('lbGwFe'))]",
     "lbGwBeAddressPoolId": "[concat(variables('lbGwId'),'/backendAddressPools/',parameters('lbGwBe'))]",
 
-    "dnsLabelPrefix": "[tolower(concat('dns-', parameters('vmAdName')))]",
+    "dnsLabelPrefix": "[tolower(concat('dns-', variables('vmAdName')))]",
     "storageAccountType": "Standard_LRS",
     "imagePublisher": "MicrosoftWindowsServer",
     "imageOffer": "WindowsServer",
@@ -186,9 +189,9 @@
     "availPlatformUpdateDomainCount": "5",
     "availShName": "avail-sh-1",
 
-    "nicAdName": "[concat(variables('nicPrefix'),parameters('vmAdName'))]",
-    "nicGwName": "[concat(variables('nicPrefix'),parameters('vmGwName'))]",
-    "nicCbName": "[concat(variables('nicPrefix'),parameters('vmCbName'))]",
+    "nicAdName": "[concat(variables('nicPrefix'),variables('vmAdName'))]",
+    "nicGwName": "[concat(variables('nicPrefix'),variables('vmGwName'))]",
+    "nicCbName": "[concat(variables('nicPrefix'),variables('vmCbName'))]",
     "nicShName": "[concat(variables('nicPrefix'),parameters('vmShName'))]",
 
     "nsgID": "[resourceId('Microsoft.Network/networkSecurityGroups',variables('nsgName'))]"
@@ -480,7 +483,7 @@
         },
         "parameters": {
           "vmName": {
-            "value": "[parameters('vmAdName')]"
+            "value": "[variables('vmAdName')]"
           },
           "storageAccount": {
             "value": "[parameters('stDiagName')]"
@@ -524,7 +527,7 @@
         },
         "parameters": {
           "primaryAdName": {
-            "value": "[parameters('vmAdName')]"
+            "value": "[variables('vmAdName')]"
           },
           "domainName": {
             "value": "[parameters('adDomainName')]"
@@ -676,7 +679,7 @@
     {
       "apiVersion": "2018-10-01",
       "type": "Microsoft.Compute/virtualMachines",
-      "name": "[parameters('vmGwName')]",
+      "name": "[variables('vmGwName')]",
       "location": "[parameters('location')]",
       "dependsOn": [
         "[variables('deployPrimaryAdID')]",
@@ -691,7 +694,7 @@
           "id": "[resourceId('Microsoft.Compute/availabilitySets', parameters('availGwName'))]"
         },
         "osProfile": {
-          "computerName": "[parameters('vmGwName')]",
+          "computerName": "[variables('vmGwName')]",
           "adminUsername": "[parameters('adminUsername')]",
           "adminPassword": "[parameters('adminPassword')]"
         },
@@ -703,7 +706,7 @@
             "version": "latest"
           },
           "osDisk": {
-            "name": "[concat(parameters('vmGwName'),'-osdisk')]",
+            "name": "[concat(variables('vmGwName'),'-osdisk')]",
             "createOption": "FromImage",
             "managedDisk": {
               "storageAccountType": "Standard_LRS"
@@ -729,10 +732,10 @@
         {
           "apiVersion": "2018-10-01",
           "type": "Microsoft.Compute/virtualMachines/extensions",
-          "name": "[concat(parameters('vmGwName'),'/gateway')]",
+          "name": "[concat(variables('vmGwName'),'/gateway')]",
           "location": "[parameters('location')]",
           "dependsOn": [
-            "[resourceId('Microsoft.Compute/virtualMachines', parameters('vmGwName'))]"
+            "[resourceId('Microsoft.Compute/virtualMachines', variables('vmGwName'))]"
           ],
           "properties": {
             "publisher": "Microsoft.Powershell",
@@ -852,7 +855,7 @@
     {
       "apiVersion": "2018-10-01",
       "type": "Microsoft.Compute/virtualMachines",
-      "name": "[parameters('vmCbName')]",
+      "name": "[variables('vmCbName')]",
       "location": "[parameters('location')]",
       "dependsOn": [
         "[variables('deployPrimaryAdID')]",
@@ -868,7 +871,7 @@
           "id": "[resourceId('Microsoft.Compute/availabilitySets', parameters('availCbName'))]"
         },
         "osProfile": {
-          "computerName": "[parameters('vmCbName')]",
+          "computerName": "[variables('vmCbName')]",
           "adminUsername": "[parameters('adminUsername')]",
           "adminPassword": "[parameters('adminPassword')]"
         },
@@ -880,7 +883,7 @@
             "version": "latest"
           },
           "osDisk": {
-            "name": "[concat(parameters('vmCbName'),'-osdisk')]",
+            "name": "[concat(variables('vmCbName'),'-osdisk')]",
             "createOption": "FromImage",
             "managedDisk": {
               "storageAccountType": "Standard_LRS"
@@ -905,12 +908,12 @@
     },
     {
       "type": "Microsoft.Compute/virtualMachines/extensions",
-      "name": "[concat(parameters('vmCbName'), '/rdsdeployment')]",
+      "name": "[concat(variables('vmCbName'), '/rdsdeployment')]",
       "apiVersion": "2015-06-15",
       "location": "[parameters('location')]",
       "dependsOn": [
-        "[resourceId('Microsoft.Compute/virtualMachines', parameters('vmCbName'))]",
-        "[concat('Microsoft.Compute/virtualMachines/',parameters('vmGwName'),'/extensions/gateway')]",
+        "[resourceId('Microsoft.Compute/virtualMachines', variables('vmCbName'))]",
+        "[concat('Microsoft.Compute/virtualMachines/',variables('vmGwName'),'/extensions/gateway')]",
         "rdsh-vm-loop"
       ],
       "properties": {
@@ -931,12 +934,12 @@
               "UserName": "[parameters('adminUsername')]",
               "Password": "PrivateSettingsRef:adminPassword"
             },
-            "connectionBroker": "[concat(parameters('vmCbName'),'.',parameters('adDomainName'))]",
+            "connectionBroker": "[concat(variables('vmCbName'),'.',parameters('adDomainName'))]",
             "domainName": "[parameters('adDomainName')]",
             "externalfqdn": "[reference(parameters('pipLbGwName')).dnsSettings.fqdn]",
             "numberOfRdshInstances": "[parameters('numberOfShInstances')]",
             "sessionHostNamingPrefix": "[parameters('vmShName')]",
-            "webAccessServer": "[concat(parameters('vmGwName'),'.',parameters('adDomainName'))]"
+            "webAccessServer": "[concat(variables('vmGwName'),'.',parameters('adDomainName'))]"
           }
         }
       }
