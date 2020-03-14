@@ -64,7 +64,7 @@
         "Standard_D4_v2",
         "Standard_D5_v2"
       ],
-      "defaultValue": "Standard_A4_v2"
+      "defaultValue": "Standard_B2ms"
     },
     "vmGwSize": {
       "type": "string",
@@ -86,7 +86,7 @@
         "Standard_D4_v2",
         "Standard_D5_v2"
       ],
-      "defaultValue": "Standard_A2_v2"
+      "defaultValue": "Standard_B2ms"
     },
     "numberOfGwInstances": {
       "type": "int",
@@ -115,7 +115,7 @@
         "Standard_D4_v2",
         "Standard_D5_v2"
       ],
-      "defaultValue": "Standard_A2_v2"
+      "defaultValue": "Standard_B2ms"
     },
     "numberOfCbInstances": {
       "type": "int",
@@ -143,7 +143,7 @@
         "Standard_D4_v2",
         "Standard_D5_v2"
       ],
-      "defaultValue": "Standard_A2_v2"
+      "defaultValue": "Standard_A8m_v2"
     },
     "numberOfShInstances": {
       "type": "int",
