@@ -357,7 +357,7 @@
           "existingCbServer": {
             "value": "[variables('cbFqdnServerName')]"
           },
-          "exitingGwName": {
+          "existingGwName": {
             "value": "[variables('vmGwName')]"
           },
           "WebURL": {
