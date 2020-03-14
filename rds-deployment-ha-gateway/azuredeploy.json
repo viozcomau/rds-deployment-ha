@@ -166,7 +166,7 @@
             ],
             "properties": {
                 "hardwareProfile": {
-                    "vmGwSize": "[parameters('vmGwSize')]"
+                    "vmSize": "[parameters('vmGwSize')]"
                 },
                 "availabilitySet": {
                     "id": "[variables('availGwId')]"
