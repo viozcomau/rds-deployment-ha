@@ -186,12 +186,12 @@ for ($i = 0; $i -le $numberofwebServers; $i++)
 { 
     if ($i -eq 0)
     {
-        $webServername = "Gateway"
+        $webServername = "vm-gw-" + $i.ToString()
         #Write-Host "For i = 0, srvername = $($webServername)"
     }
     else{
     $servercount = $i - 1
-    $webServername = "gateway" + $servercount.ToString()
+    $webServername = "vm-gw-" + $servercount.ToString()
     #Write-Host "For $($i), servername = $($webServername)"
         }
     $webServernameArray.Add($webServername) | Out-Null

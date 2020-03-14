@@ -57,6 +57,7 @@
         "Standard_A4m_v2",
         "Standard_A8_v2",
         "Standard_A8m_v2",
+        "Standard_B2ms",
         "Standard_D1_v2",
         "Standard_D2_v2",
         "Standard_D3_v2",
@@ -78,6 +79,7 @@
         "Standard_A4m_v2",
         "Standard_A8_v2",
         "Standard_A8m_v2",
+        "Standard_B2ms",
         "Standard_D1_v2",
         "Standard_D2_v2",
         "Standard_D3_v2",
@@ -106,6 +108,7 @@
         "Standard_A4m_v2",
         "Standard_A8_v2",
         "Standard_A8m_v2",
+        "Standard_B2ms",
         "Standard_D1_v2",
         "Standard_D2_v2",
         "Standard_D3_v2",
@@ -351,8 +354,11 @@
           "numberOfGwInstances": {
             "value": "[parameters('numberOfGwInstances')]"
           },
-          "brokerServer": {
+          "existingCbServer": {
             "value": "[variables('cbFqdnServerName')]"
+          },
+          "exitingGwName": {
+            "value": "[variables('vmGwName')]"
           },
           "WebURL": {
             "value": "[variables('gwExternalFqdn')]"
@@ -368,9 +374,6 @@
           },
           "availGwName": {
             "value": "[variables('availGwName')]"
-          },
-          "vmGwName": {
-            "value": "[variables('vmGwName')]"
           },
           "rgName": {
             "value": "[resourceGroup().name]"

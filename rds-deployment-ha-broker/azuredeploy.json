@@ -36,34 +36,34 @@
         "description": "The password of the administrator account"
       }
     },
-    "existingDomainName": {
+    "adDomainName": {
       "type": "string",
       "metadata": {
         "description": "The domain to join the Connection Broker Machine to"
       }
     },
-    "existingBrokerAvailabilitySet": {
+    "availCbName": {
       "type": "string",
       "defaultValue": "cb-availabilityset",
       "metadata": {
         "description": "Availability set for RD Connection Brokers"
       }
     },
-    "existingBrokerHostname": {
+    "existingCbName": {
       "type": "string",
       "defaultValue": "rdcb-01",
       "metadata": {
         "description": "The host name of the existing Connection Broker vm"
       }
     },
-    "existingSubnetName": {
+    "snetName": {
       "type": "string",
       "defaultValue": "Subnet",
       "metadata": {
         "description": "Subnet name"
       }
     },
-    "existingVnetName": {
+    "vnetName": {
       "type": "string",
       "defaultValue": "vnet",
       "metadata": {
@@ -103,9 +103,9 @@
     "sqlClientUrl": "http://go.microsoft.com/fwlink/?LinkID=239648&clcid=0x409",
     "vmPrefix": "",
     "p": {
-      "broker": "[concat(' -existingBroker ', parameters('existingBrokerHostname'))]",
+      "broker": "[concat(' -existingBroker ', parameters('existingCbName'))]",
       "connstr": "[concat(' -primaryDbConnectionString \"', parameters('primaryDbConnectionString'), '\"')]",
-      "domain": "[concat(' -domainName ', parameters('existingDomainName'))]",
+      "domain": "[concat(' -domainName ', parameters('adDomainName'))]",
       "user": "[concat(' -username ', parameters('adminUsername'))]",
       "pwd": "[concat(' -password ', parameters('adminPassword'))]",
       "can": "[concat(' -clientAccessName \"', parameters('clientAccessName'), '\"')]",
@@ -141,7 +141,7 @@
             "properties": {
               "privateIPAllocationMethod": "Dynamic",
               "subnet": {
-                "id": "[resourceId('Microsoft.Network/virtualNetworks/subnets', parameters('existingVnetName'), parameters('existingSubnetName'))]"
+                "id": "[resourceId('Microsoft.Network/virtualNetworks/subnets', parameters('vnetName'), parameters('snetName'))]"
               }
             }
           }
@@ -162,7 +162,7 @@
           "vmSize": "Standard_A2"
         },
         "availabilitySet": {
-          "id": "[resourceId('Microsoft.Compute/availabilitySets', parameters('existingBrokerAvailabilitySet'))]"
+          "id": "[resourceId('Microsoft.Compute/availabilitySets', parameters('availCbName'))]"
         },
         "osProfile": {
           "computerName": "[variables('brokerVmName')]",
@@ -211,7 +211,7 @@
           "modulesUrl": "[concat(parameters('_artifactsLocation'),'/DSC/Configuration.zip')]",
           "configurationFunction": "Configuration.ps1\\DomainJoin",
           "properties": {
-            "domainName": "[parameters('existingDomainName')]",
+            "domainName": "[parameters('adDomainName')]",
             "adminCreds": {
               "UserName": "[parameters('adminUsername')]",
               "Password": "PrivateSettingsRef:adminPassword"
